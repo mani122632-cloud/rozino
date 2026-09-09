@@ -1,0 +1,19 @@
+{
+  "name": "روزینو",
+  "short_name": "روزینو",
+  "description": "برنامه‌ریز روزانه روزینو",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F7F2E8",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait",
+  "lang": "fa",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
