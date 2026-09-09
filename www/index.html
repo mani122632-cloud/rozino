@@ -1,0 +1,2466 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>روزینو — برنامه‌ریز روزانه</title>
+<meta name="theme-color" content="#AD8A3C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="./icon.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css">
+<style>
+  :root{
+    /* ---------- Zarnigar (زرنگار) — Light: Ivory / Cream / Charcoal / Gold ---------- */
+    --bg:#F7F1E3;
+    --surface:#FFFDF7;
+    --surface-2:#F1E7D1;
+    --surface-3:#E7D8B7;
+    --ink:#241F17;
+    --ink-soft:#6C5F4C;
+    --muted:#A0937A;
+    --line:#EAE0C7;
+    --primary:#AD8A3C;
+    --primary-ink:#2A2013;
+    --primary-soft:#F3E7C8;
+    --primary-deep:#7C5A1E;
+    --accent:#8C6A33;
+    --accent-soft:#EEE2C4;
+    --danger:#B14B3A;
+    --danger-soft:#F6E3DA;
+    --radius-s:12px;
+    --radius-m:18px;
+    --radius-l:26px;
+    --radius-xl:32px;
+    --shadow-sm: 0 1px 2px rgba(40,32,16,.05), 0 4px 14px -8px rgba(40,32,16,.13);
+    --shadow-md: 0 8px 22px -8px rgba(40,32,16,.22), 0 2px 8px rgba(40,32,16,.08);
+    --shadow-fab: 0 10px 24px -6px rgba(173,138,60,.45);
+    --scrim: rgba(24,18,9,.48);
+    --cat-درس:#5A6B8C;
+    --cat-کار:#6B5335;
+    --cat-ورزش:#A9643D;
+    --cat-شخصی:#7C6187;
+    --cat-خرید:#9C5B54;
+    --cat-استراحت:#52717A;
+    --cat-سایر:#8F8267;
+  }
+  [data-theme="dark"]{
+    /* ---------- Zarnigar — Dark: Deep Charcoal / Black / Gold / Warm Ivory ---------- */
+    --bg:#14100A;
+    --surface:#1E1810;
+    --surface-2:#282017;
+    --surface-3:#332A1D;
+    --ink:#F3EAD9;
+    --ink-soft:#C7B99E;
+    --muted:#8C8069;
+    --line:#332A1D;
+    --primary:#D9B564;
+    --primary-ink:#211A0F;
+    --primary-soft:#3A2E15;
+    --primary-deep:#93711F;
+    --accent:#C9A46B;
+    --accent-soft:#2E2717;
+    --danger:#DD7C5F;
+    --danger-soft:#3B2419;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.22), 0 4px 14px -8px rgba(0,0,0,.35);
+    --shadow-md: 0 10px 26px -8px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3);
+    --shadow-fab: 0 10px 24px -6px rgba(217,181,100,.35);
+    --scrim: rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Vazirmatn', Tahoma, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    transition:background .25s ease, color .25s ease;
+  }
+  button, input, textarea, select{font-family:inherit;}
+  button{-webkit-appearance:none;appearance:none;}
+  ::selection{background:var(--primary-soft);}
+  svg{display:block;}
+
+  /* ---------- layout ---------- */
+  .app{display:flex;min-height:100vh;}
+  .sidebar{
+    width:210px;flex:none;background:var(--bg);
+    display:flex;flex-direction:column;padding:22px 14px;gap:4px;
+    position:sticky;top:0;height:100vh;
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 24px;}
+  .brand-mark{
+    width:32px;height:32px;border-radius:10px;flex:none;
+    background:linear-gradient(155deg, var(--primary), var(--accent));
+  }
+  .brand-name{font-weight:800;font-size:15.5px;letter-spacing:.2px;}
+  .brand-sub{font-size:10.5px;color:var(--muted);margin-top:1px;}
+
+  .nav-item{
+    display:flex;align-items:center;gap:11px;
+    padding:10px 12px;border-radius:var(--radius-s);
+    color:var(--ink-soft);font-weight:600;font-size:14px;
+    cursor:pointer;border:none;background:none;width:100%;text-align:start;
+    transition:background .15s ease, color .15s ease;
+  }
+  .nav-item svg{width:18px;height:18px;flex:none;stroke-width:1.8;}
+  .nav-item:hover{background:var(--surface-2);color:var(--ink);}
+  .nav-item.active{background:var(--surface);color:var(--primary);box-shadow:var(--shadow-sm);}
+  .nav-spacer{flex:1;}
+
+  .theme-toggle{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 12px;border-radius:var(--radius-s);
+    font-size:12.5px;font-weight:600;color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .switch{
+    width:38px;height:22px;border-radius:20px;background:var(--surface-3);
+    position:relative;cursor:pointer;border:none;flex:none;
+  }
+  .switch::after{
+    content:'';position:absolute;top:2px;inset-inline-end:2px;
+    width:18px;height:18px;border-radius:50%;background:var(--surface);
+    box-shadow:0 1px 3px rgba(0,0,0,.2);
+    transition:inset-inline-end .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .switch.on{background:var(--primary);}
+  .switch.on::after{inset-inline-end:18px;}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .mobile-topbar{display:none;}
+  .view{
+    flex:1;padding:8px 20px 130px;max-width:640px;width:100%;margin:0 auto;
+    animation:viewIn .22s ease;
+  }
+  @keyframes viewIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+  .view.hidden{display:none;}
+
+  /* ---------- hero (today header) ---------- */
+  .hero{padding:14px 2px 6px;}
+  .hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+  .hero-weekday{font-size:12.5px;font-weight:700;color:var(--primary);letter-spacing:.3px;}
+  .hero-date{font-size:27px;font-weight:800;margin-top:3px;letter-spacing:-.2px;color:var(--ink);}
+  .hero-msg{margin:12px 0 0;font-size:14px;color:var(--ink-soft);font-weight:600;}
+
+  .ring{
+    --pct:0%;width:52px;height:52px;border-radius:50%;flex:none;
+    background:conic-gradient(var(--primary) var(--pct), var(--surface-3) 0);
+    display:flex;align-items:center;justify-content:center;position:relative;
+    transition:background .35s ease;
+  }
+  .ring::before{content:'';position:absolute;inset:5px;border-radius:50%;background:var(--bg);}
+  .ring span{position:relative;font-size:11.5px;font-weight:800;font-variant-numeric:tabular-nums;}
+
+  .hero-now, .hero-next{
+    display:none;align-items:center;gap:10px;margin-top:12px;
+    padding:11px 13px;border-radius:var(--radius-m);background:var(--surface);
+  }
+  .hero-now{border-inline-start:3px solid var(--primary);}
+  .hero-next{border-inline-start:3px solid var(--line);}
+  .hero-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none;}
+  .hero-dot.live{background:var(--primary);box-shadow:0 0 0 4px var(--primary-soft);}
+  .hero-now-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;}
+  .hero-tag{font-size:10.5px;color:var(--muted);font-weight:700;}
+  .hero-now-title{font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .hero-now-time{font-size:11.5px;color:var(--ink-soft);font-weight:700;font-variant-numeric:tabular-nums;flex:none;}
+
+  .hero-meta{margin-top:14px;font-size:12px;color:var(--muted);font-weight:600;}
+  .hero-meta span{color:var(--ink);font-weight:800;}
+
+  /* ---------- section headers ---------- */
+  .sec-head{display:flex;align-items:center;justify-content:space-between;margin:22px 0 10px;gap:10px;flex-wrap:wrap;}
+  .sec-title{font-size:12px;font-weight:800;color:var(--ink-soft);letter-spacing:.3px;display:flex;align-items:center;gap:7px;}
+  .sec-title::before{content:'';width:3px;height:12px;border-radius:2px;background:var(--primary);flex:none;}
+  .sec-actions{display:flex;align-items:center;gap:8px;}
+  .view-toggle{display:flex;background:var(--surface-2);border-radius:999px;padding:3px;gap:2px;}
+  .view-toggle button{
+    border:none;background:none;padding:6px 13px;border-radius:999px;font-size:12px;font-weight:700;
+    color:var(--muted);cursor:pointer;
+  }
+  .view-toggle button.active{background:var(--surface);color:var(--primary);box-shadow:var(--shadow-sm);}
+
+  .chip-btn{
+    display:flex;align-items:center;gap:6px;border:none;background:var(--surface-2);color:var(--ink-soft);
+    font-weight:700;font-size:11.5px;border-radius:999px;padding:8px 12px;cursor:pointer;
+  }
+  .chip-btn svg{width:14px;height:14px;}
+  .chip-btn:hover{background:var(--surface-3);}
+
+  /* ---------- quick add ---------- */
+  .quickadd{
+    display:flex;align-items:center;gap:6px;background:var(--surface);
+    border-radius:999px;padding:5px 5px 5px 16px;margin:16px 0 0;box-shadow:var(--shadow-sm);
+  }
+  .quickadd input{flex:1;border:none;background:none;outline:none;font-size:13.5px;color:var(--ink);padding:8px 4px;}
+  .quickadd input::placeholder{color:var(--muted);}
+  .quickadd button{
+    border:none;background:var(--primary);color:var(--primary-ink);flex:none;
+    width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  }
+  .quickadd button svg{width:17px;height:17px;}
+
+  /* ---------- task list ---------- */
+  .task-list{display:flex;flex-direction:column;background:var(--surface);border-radius:var(--radius-m);overflow:hidden;box-shadow:var(--shadow-sm);}
+  .task-card{
+    display:flex;align-items:center;gap:12px;
+    border-bottom:1px solid var(--line);
+    padding:13px 14px;border-inline-start:3px solid var(--cat-سایر);
+  }
+  .task-list .task-card:last-child{border-bottom:none;}
+  .task-card.done{opacity:.5;}
+  .task-card.done .task-title{text-decoration:line-through;}
+  .task-check{
+    width:23px;height:23px;border-radius:50%;border:2px solid var(--line);
+    flex:none;cursor:pointer;background:none;
+    display:flex;align-items:center;justify-content:center;transition:.15s ease;
+  }
+  .task-check svg{width:12px;height:12px;opacity:0;transition:.15s ease;}
+  .task-card.done .task-check{background:var(--primary);border-color:var(--primary);}
+  .task-card.done .task-check svg{opacity:1;stroke:var(--primary-ink);}
+  .task-body{flex:1;min-width:0;}
+  .task-title{font-weight:700;font-size:14px;}
+  .task-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px;align-items:center;}
+  .chip{
+    font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px;
+    background:var(--surface-2);color:var(--ink-soft);
+  }
+  .chip.time{font-variant-numeric:tabular-nums;}
+  .chip.prio-زیاد{background:var(--danger-soft);color:var(--danger);}
+  .chip.prio-متوسط{background:var(--accent-soft);color:#6E4F1C;}
+  [data-theme="dark"] .chip.prio-متوسط{color:var(--accent);}
+  .chip.prio-کم{background:var(--surface-2);color:var(--muted);}
+  .task-actions{display:flex;gap:2px;flex:none;}
+  .icon-btn{
+    width:30px;height:30px;border-radius:9px;border:none;background:none;color:var(--muted);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s ease;
+  }
+  .icon-btn:hover{background:var(--surface-2);color:var(--ink);}
+  .icon-btn.warn:hover{background:var(--danger-soft);color:var(--danger);}
+  .icon-btn svg{width:15px;height:15px;}
+
+  .overdue-tag{color:var(--danger);font-weight:700;}
+
+  .empty{text-align:center;padding:50px 16px;color:var(--muted);}
+  .empty svg{width:38px;height:38px;opacity:.35;margin-bottom:10px;}
+  .empty p{margin:0;font-size:13px;}
+
+  /* ---------- timeline ---------- */
+  .timeline{position:relative;padding-inline-start:54px;margin-top:4px;}
+  .timeline::before{content:'';position:absolute;inset-inline-start:42px;top:6px;bottom:6px;width:2px;background:var(--line);}
+  .tl-row{position:relative;margin-bottom:14px;}
+  .tl-time{
+    position:absolute;inset-inline-start:-54px;top:2px;width:42px;text-align:end;
+    font-size:11px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;
+  }
+  .tl-dot{position:absolute;inset-inline-start:-15px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--primary);border:2px solid var(--bg);}
+  .tl-card{
+    background:var(--surface);border-radius:var(--radius-s);
+    padding:10px 12px;border-bottom:none;box-shadow:var(--shadow-sm);
+  }
+  .tl-card .task-title{font-size:13px;}
+  .tl-break{font-size:11px;color:var(--muted);padding:3px 0 3px 2px;}
+
+  /* ---------- FAB ---------- */
+  .fab{
+    position:fixed;bottom:26px;inset-inline-end:22px;z-index:40;
+    background:linear-gradient(155deg, var(--primary), var(--primary-deep));
+    color:var(--primary-ink);border:none;width:58px;height:58px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    box-shadow:var(--shadow-fab);
+  }
+  .fab svg{width:23px;height:23px;}
+
+  /* ---------- calendar ---------- */
+  .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .cal-nav .month-label{font-weight:800;font-size:15px;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+  .cal-dow{text-align:center;font-size:10.5px;color:var(--muted);font-weight:700;padding-bottom:6px;}
+  .cal-cell{
+    aspect-ratio:1/1;border-radius:13px;background:var(--surface);
+    padding:6px;display:flex;flex-direction:column;align-items:center;cursor:pointer;position:relative;
+    transition:.15s ease;
+  }
+  .cal-cell:hover{background:var(--surface-2);}
+  .cal-cell.other-month{opacity:.3;}
+  .cal-cell.today .cal-daynum{color:var(--primary);}
+  .cal-cell.today{box-shadow:inset 0 0 0 1.5px var(--primary);}
+  .cal-cell.selected{background:var(--primary);}
+  .cal-cell.selected .cal-daynum{color:var(--primary-ink);}
+  .cal-cell.selected.today{box-shadow:none;}
+  .cal-daynum{font-size:12px;font-weight:800;}
+  .cal-cell-bar{margin-top:auto;height:3px;width:60%;border-radius:3px;background:var(--surface-3);overflow:hidden;}
+  .cal-cell.selected .cal-cell-bar{background:rgba(255,255,255,.35);}
+  .cal-cell-bar i{display:block;height:100%;background:var(--primary);}
+  .cal-cell.selected .cal-cell-bar i{background:#fff;}
+  .cal-cell-count{font-size:8.5px;color:var(--muted);margin-top:2px;}
+  .cal-cell.selected .cal-cell-count{color:rgba(255,255,255,.75);}
+
+  /* ---------- jalali date picker (برای همه‌ی Date Pickerهای برنامه) ---------- */
+  .date-input-fa{cursor:pointer;caret-color:transparent;}
+  .jdp-popup{
+    display:none;position:fixed;z-index:500;width:266px;max-width:92vw;
+    background:var(--surface);border-radius:var(--radius-m);box-shadow:var(--shadow-md);
+    padding:12px;
+  }
+  .jdp-popup.open{display:block;animation:viewIn .16s ease;}
+  .jdp-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .jdp-nav .jdp-label{font-weight:800;font-size:13px;}
+  .jdp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+  .jdp-dow{text-align:center;font-size:9.5px;color:var(--muted);font-weight:700;padding-bottom:5px;}
+  .jdp-cell{
+    aspect-ratio:1/1;border-radius:9px;border:none;background:none;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;
+    cursor:pointer;font-variant-numeric:tabular-nums;
+  }
+  .jdp-cell:hover{background:var(--surface-2);}
+  .jdp-cell.other-month{opacity:.32;}
+  .jdp-cell.today{box-shadow:inset 0 0 0 1.5px var(--primary);}
+  .jdp-cell.selected{background:var(--primary);color:var(--primary-ink);}
+  .jdp-cell.selected.today{box-shadow:none;}
+  .jdp-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);}
+  .jdp-footer button{border:none;background:none;font-weight:700;font-size:11.5px;cursor:pointer;padding:5px 6px;border-radius:8px;color:var(--primary);}
+  .jdp-footer button:hover{background:var(--surface-2);}
+  .jdp-footer button.jdp-clear{color:var(--danger);}
+
+  /* ---------- tasks page ---------- */
+  .filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
+  .filters select, .filters input[type=text], .filters input[type=date]{
+    border:none;background:var(--surface-2);border-radius:999px;
+    padding:9px 13px;font-size:12.5px;color:var(--ink);outline:none;
+  }
+  .filters .search-wrap{flex:1;min-width:150px;}
+  .filters .search-wrap input{width:100%;border-radius:var(--radius-s);}
+  .seg{display:flex;background:var(--surface-2);border-radius:999px;padding:3px;gap:2px;}
+  .seg button{border:none;background:none;padding:8px 13px;border-radius:999px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;}
+  .seg button.active{background:var(--surface);color:var(--primary);box-shadow:var(--shadow-sm);}
+
+  /* ---------- stats ---------- */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px;}
+  .stat-card{background:var(--surface);border-radius:var(--radius-m);padding:15px;box-shadow:var(--shadow-sm);}
+  .stat-card b{display:block;font-size:22px;font-weight:800;}
+  .stat-card span{font-size:11.5px;color:var(--muted);font-weight:600;}
+  .chart-card{background:var(--surface);border-radius:var(--radius-m);padding:16px;box-shadow:var(--shadow-sm);margin-bottom:14px;}
+  .chart-card h4{margin:0 0 14px;font-size:12.5px;font-weight:800;color:var(--ink-soft);}
+  .bar-chart{display:flex;align-items:flex-end;gap:9px;height:130px;}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px;}
+  .bar-col .bar{width:100%;max-width:26px;border-radius:6px 6px 3px 3px;background:var(--primary);min-height:3px;transition:height .3s ease;}
+  .bar-col .bar-label{font-size:10px;color:var(--muted);font-weight:700;}
+  .bar-col .bar-value{font-size:9.5px;color:var(--ink-soft);font-weight:700;}
+
+  /* ---------- modal / bottom sheet ---------- */
+  .overlay{
+    position:fixed;inset:0;background:var(--scrim);backdrop-filter:blur(2px);
+    display:flex;align-items:flex-end;justify-content:center;z-index:100;
+    opacity:0;pointer-events:none;transition:opacity .18s ease;
+  }
+  .overlay.open{opacity:1;pointer-events:auto;}
+  .modal{
+    background:var(--surface);width:100%;max-width:480px;border-radius:26px 26px 0 0;
+    padding:10px 22px 26px;max-height:90vh;overflow-y:auto;
+    transform:translateY(16px) scale(.98);transition:transform .22s cubic-bezier(.22,1,.36,1);
+  }
+  .modal::before{content:'';display:block;width:36px;height:4px;border-radius:3px;background:var(--surface-3);margin:6px auto 16px;}
+  .overlay.open .modal{transform:translateY(0) scale(1);}
+  @media (min-width:640px){
+    .overlay{align-items:center;}
+    .modal{border-radius:var(--radius-l);}
+    .modal::before{display:none;}
+  }
+  .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .modal-head h3{margin:0;font-size:16px;font-weight:800;}
+  .modal-head button{border:none;background:var(--surface-2);width:28px;height:28px;border-radius:9px;cursor:pointer;color:var(--ink-soft);}
+  .field{margin-bottom:13px;}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;}
+  .field input, .field textarea, .field select{
+    width:100%;border:none;background:var(--surface-2);border-radius:var(--radius-s);
+    padding:11px 12px;font-size:13.5px;color:var(--ink);outline:none;
+  }
+  .field textarea{resize:vertical;min-height:60px;}
+  .field input:focus, .field textarea:focus, .field select:focus{box-shadow:inset 0 0 0 1.5px var(--primary);}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .pill-group{display:flex;gap:7px;flex-wrap:wrap;}
+  .pill-opt{
+    border:none;background:var(--surface-2);border-radius:999px;padding:8px 14px;
+    font-size:12px;font-weight:700;color:var(--ink-soft);cursor:pointer;
+  }
+  .pill-opt.active{background:var(--primary);color:var(--primary-ink);}
+  .cat-opt.active{color:#fff;}
+  .duration-toggle{display:flex;gap:8px;margin-bottom:10px;}
+  .modal-actions{display:flex;gap:9px;margin-top:18px;}
+  .btn{flex:1;border:none;border-radius:var(--radius-s);padding:13px;font-weight:800;font-size:13.5px;cursor:pointer;}
+  .btn.primary{background:var(--primary);color:var(--primary-ink);}
+  .btn.ghost{background:var(--surface-2);color:var(--ink-soft);}
+  .btn.danger{background:var(--danger-soft);color:var(--danger);flex:none;width:48px;padding:13px 0;}
+  .hint{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.7;}
+  .warn-box{background:var(--danger-soft);color:var(--danger);border-radius:var(--radius-s);padding:10px 12px;font-size:12px;font-weight:700;margin-top:10px;}
+  .ok-box{background:var(--primary-soft);color:var(--primary);border-radius:var(--radius-s);padding:10px 12px;font-size:12px;font-weight:700;margin-top:10px;}
+
+  /* ---------- mobile ---------- */
+  .bottom-nav{display:none;}
+  @media (max-width: 860px){
+    .sidebar{display:none;}
+    .view{padding:0 16px 128px;max-width:none;}
+    .bottom-nav{
+      display:flex;position:fixed;bottom:0;inset-inline:0;background:var(--surface);
+      padding:9px 6px calc(6px + env(safe-area-inset-bottom));
+      z-index:50;justify-content:space-around;box-shadow:0 -4px 18px -10px rgba(0,0,0,.18);
+    }
+    .bottom-nav button{
+      border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:4px;
+      color:var(--muted);font-size:10px;font-weight:700;cursor:pointer;padding:4px 14px;border-radius:12px;
+      position:relative;
+    }
+    .bottom-nav button svg{width:20px;height:20px;stroke-width:1.8;transition:.15s ease;}
+    .bottom-nav button.active{color:var(--primary);}
+    .bottom-nav button.active svg{stroke-width:2.2;}
+    .bottom-nav button::before{
+      content:'';position:absolute;top:-9px;width:16px;height:3px;border-radius:3px;background:var(--primary);
+      opacity:0;transform:scale(.4);transition:opacity .18s ease, transform .18s cubic-bezier(.34,1.56,.64,1);
+    }
+    .bottom-nav button.active::before{
+      opacity:1;transform:scale(1);
+    }
+    .fab{bottom:82px;inset-inline-end:16px;}
+    .mobile-topbar{
+      display:flex;align-items:center;justify-content:space-between;padding:16px 16px 4px;max-width:none;
+    }
+    .mobile-topbar .brand{padding:0;}
+    .mobile-topbar .brand-mark{width:26px;height:26px;border-radius:8px;}
+    .mobile-topbar .brand-name{font-size:13.5px;}
+    .mobile-topbar .switch{margin:0;}
+  }
+  @media (min-width:861px){.mobile-topbar{display:none;}}
+
+  .toast-wrap{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;}
+  .toast{
+    background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:12.5px;font-weight:700;
+    box-shadow:var(--shadow-md);animation:toastIn .18s ease;
+  }
+  [data-theme="dark"] .toast{background:var(--surface-2);color:var(--ink);}
+  @keyframes toastIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+
+  .repeat-days{display:flex;gap:6px;flex-wrap:wrap;}
+  .repeat-day{
+    width:34px;height:34px;border-radius:10px;border:none;background:var(--surface-2);
+    font-size:11px;font-weight:700;color:var(--ink-soft);cursor:pointer;
+  }
+  .repeat-day.active{background:var(--primary);color:var(--primary-ink);}
+
+  /* =========================================================
+     MICRO-INTERACTIONS / TOUCH & CLICK FEEDBACK (additive only)
+     ظاهر و چیدمان تغییر نکرده؛ فقط ترنزیشن و بازخورد لمسی/کلیکی
+     با transform/opacity اضافه شده تا روی موبایل سبک و روان بماند.
+     ========================================================= */
+  .nav-item, .chip-btn, .view-toggle button, .seg button, .pill-opt,
+  .repeat-day, .btn, .modal-head button, .jdp-footer button, .jdp-cell,
+  .quickadd button, .fab, .bottom-nav button, .task-check, .switch{
+    transition-property: transform, background, background-color, color, box-shadow, opacity;
+    transition-duration:.15s;
+    transition-timing-function: ease;
+  }
+  .task-check{transition-duration:.18s;}
+  .icon-btn, .cal-cell{transition-property: transform, background, background-color, color, box-shadow, opacity;}
+
+  .field input, .field textarea, .field select,
+  .filters select, .filters input[type=text], .filters input[type=date],
+  .quickadd input{
+    transition: box-shadow .15s ease;
+  }
+  .filters select, .field select{
+    transition-property: box-shadow, transform;
+    transition-duration:.15s;
+    transition-timing-function: ease;
+  }
+
+  /* یک کلاس عمومی که هنگام لمس/کلیک هر عنصر Interactive توسط اسکریپت اضافه می‌شود؛
+     صرفاً یک Scale بسیار ظریف و سریع برای بازخورد فوری، بدون تغییر رنگ/چیدمان. */
+  .is-pressed{transition-duration:.1s !important;transition-timing-function: cubic-bezier(.34,1.4,.64,1) !important;}
+
+  .task-card.is-pressed, .tl-card.is-pressed{transform:scale(.985);}
+  .cal-cell.is-pressed, .jdp-cell.is-pressed{transform:scale(.93);}
+  .icon-btn.is-pressed, .chip-btn.is-pressed, .nav-item.is-pressed, .nav-item-m.is-pressed,
+  .pill-opt.is-pressed, .repeat-day.is-pressed, .btn.is-pressed, .modal-head button.is-pressed,
+  .jdp-footer button.is-pressed, .bottom-nav button.is-pressed, .view-toggle button.is-pressed,
+  .seg button.is-pressed, .quickadd button.is-pressed, .task-check.is-pressed{transform:scale(.92);}
+  .fab.is-pressed{transform:scale(.9);}
+  .switch.is-pressed{transform:scale(.96);}
+  .filters select.is-pressed, .field select.is-pressed{transform:scale(.98);}
+
+  /* Task cards / timeline cards / سلول‌های تقویم باید مبنای transform داشته باشند تا Scale نرم اجرا شود */
+  .task-card, .tl-card, .cal-cell{
+    transition-property: transform, opacity, box-shadow, background, background-color;
+    transition-duration:.15s;
+    transition-timing-function: ease;
+  }
+
+  /* تیک تسک: انیمیشن نرم‌تر برای ظاهرشدن علامت هنگام تکمیل */
+  .task-check svg{transform:scale(.4);transition:opacity .18s ease, transform .18s cubic-bezier(.34,1.56,.64,1);}
+  .task-card.done .task-check svg{transform:scale(1);}
+
+  @media (prefers-reduced-motion: reduce){
+    .is-pressed{transform:none !important;}
+    *, *::before, *::after{
+      animation-duration:.001ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:.001ms !important;
+      scroll-behavior:auto !important;
+    }
+  }
+  /* ---------- Mobile/Android hardening (no visual change — behavior only) ---------- */
+  html, body{ overscroll-behavior: none; }
+  button, .btn, .pill-opt, .tab, .fab, .icon-btn, .nav-item, .chip, .brand, a{
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  input, textarea{ -webkit-user-select: text; user-select: text; }
+  body{ -webkit-text-size-adjust: 100%; }
+</style>
+</head>
+<body>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<div class="app">
+  <!-- Sidebar (desktop) -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <div class="brand-name">روزینو</div>
+        <div class="brand-sub">برنامه‌ریز روزانه</div>
+      </div>
+    </div>
+
+    <button class="nav-item active" data-tab="today">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg>
+      امروز
+    </button>
+    <button class="nav-item" data-tab="calendar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>
+      تقویم
+    </button>
+    <button class="nav-item" data-tab="tasks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      کارها
+    </button>
+    <button class="nav-item" data-tab="stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 16v-4M12 16V8M17 16v-7"/></svg>
+      آمار
+    </button>
+
+    <div class="nav-spacer"></div>
+
+    <div class="theme-toggle">
+      <span id="themeLabel">حالت شب</span>
+      <button class="switch" id="themeSwitch"></button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="mobile-topbar">
+      <div class="brand"><div class="brand-mark"></div><div class="brand-name">روزینو</div></div>
+      <button class="switch" id="themeSwitchMobile"></button>
+    </div>
+
+    <!-- TODAY VIEW -->
+    <section class="view" id="view-today">
+      <header class="hero">
+        <div class="hero-row">
+          <div>
+            <div class="hero-weekday" id="todayWeekday"></div>
+            <div class="hero-date" id="todayDate"></div>
+          </div>
+          <div class="ring" id="progressRing"><span id="statDonePct">۰٪</span></div>
+        </div>
+        <p class="hero-msg" id="todayMsg"></p>
+
+        <div class="hero-now" id="heroNowWrap">
+          <span class="hero-dot live"></span>
+          <div class="hero-now-text">
+            <span class="hero-tag">الان</span>
+            <span class="hero-now-title" id="heroNowTitle"></span>
+          </div>
+          <span class="hero-now-time" id="heroNowTime"></span>
+        </div>
+        <div class="hero-next" id="heroNextWrap">
+          <span class="hero-dot"></span>
+          <div class="hero-now-text">
+            <span class="hero-tag">بعدی</span>
+            <span class="hero-now-title" id="heroNextTitle"></span>
+          </div>
+          <span class="hero-now-time" id="heroNextTime"></span>
+        </div>
+
+        <div class="hero-meta"><span id="statRemaining">۰</span> کار باقی‌مانده از <span id="statTotal">۰</span></div>
+      </header>
+
+      <div class="quickadd">
+        <input id="quickAddInput" type="text" placeholder="مثلاً: فردا ساعت ۵ ریاضی بخونم">
+        <button id="quickAddBtn" aria-label="افزودن">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+
+      <div class="sec-head">
+        <div class="sec-title">برنامه امروز</div>
+        <div class="sec-actions">
+          <button class="chip-btn" id="autoScheduleBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg>
+            خودکار
+          </button>
+          <div class="view-toggle">
+            <button data-view="list" class="active">فهرست</button>
+            <button data-view="timeline">Timeline</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="todayListWrap"></div>
+      <div id="todayTimelineWrap" style="display:none;"></div>
+    </section>
+
+    <!-- CALENDAR VIEW -->
+    <section class="view hidden" id="view-calendar">
+      <div class="sec-head"><div class="sec-title">تقویم</div></div>
+      <div class="cal-nav">
+        <button class="icon-btn" id="calPrev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <div class="month-label" id="calMonthLabel"></div>
+        <button class="icon-btn" id="calNext"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+
+      <div class="sec-head"><div class="sec-title" id="calSelectedTitle">برنامه روز انتخاب‌شده</div></div>
+      <div id="calDayList"></div>
+    </section>
+
+    <!-- TASKS VIEW -->
+    <section class="view hidden" id="view-tasks">
+      <div class="sec-head"><div class="sec-title">همه کارها</div></div>
+      <div class="filters">
+        <div class="seg" id="statusSeg">
+          <button data-val="all" class="active">همه</button>
+          <button data-val="done">انجام‌شده</button>
+          <button data-val="undone">انجام‌نشده</button>
+        </div>
+        <select id="filterCategory">
+          <option value="">همه دسته‌ها</option>
+        </select>
+        <select id="filterPriority">
+          <option value="">همه اولویت‌ها</option>
+          <option value="زیاد">زیاد</option>
+          <option value="متوسط">متوسط</option>
+          <option value="کم">کم</option>
+        </select>
+        <input type="text" id="filterDate" inputmode="none" autocomplete="off">
+        <div class="search-wrap"><input type="text" id="searchInput" placeholder="جستجوی عنوان کار..."></div>
+      </div>
+      <div id="tasksListWrap"></div>
+    </section>
+
+    <!-- STATS VIEW -->
+    <section class="view hidden" id="view-stats">
+      <div class="sec-head"><div class="sec-title">آمار</div></div>
+      <div class="stat-grid" id="statGrid"></div>
+      <div class="chart-card">
+        <h4>روند هفته اخیر (کارهای انجام‌شده)</h4>
+        <div class="bar-chart" id="weekChart"></div>
+      </div>
+      <div class="chart-card">
+        <h4>زمان برنامه‌ریزی‌شده در برابر انجام‌شده (هفته اخیر)</h4>
+        <div class="bar-chart" id="timeChart"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Bottom nav (mobile) -->
+<div class="bottom-nav">
+  <button class="nav-item-m active" data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg>امروز</button>
+  <button class="nav-item-m" data-tab="calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>تقویم</button>
+  <button class="nav-item-m" data-tab="tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>کارها</button>
+  <button class="nav-item-m" data-tab="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 16v-4M12 16V8M17 16v-7"/></svg>آمار</button>
+</div>
+
+<button class="fab" id="fabAdd" aria-label="افزودن کار">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+
+<!-- Add/Edit Task Modal -->
+<div class="overlay" id="taskOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="taskModalTitle">افزودن کار</h3>
+      <button id="taskModalClose">✕</button>
+    </div>
+    <form id="taskForm">
+      <input type="hidden" id="taskId">
+      <div class="field">
+        <label>عنوان کار</label>
+        <input type="text" id="taskTitle" required placeholder="مثلاً: ریاضی بخونم">
+      </div>
+      <div class="field">
+        <label>توضیحات (اختیاری)</label>
+        <textarea id="taskDesc" placeholder="جزئیات بیشتر..."></textarea>
+      </div>
+      <div class="field">
+        <label>تاریخ</label>
+        <input type="text" id="taskDate" inputmode="none" autocomplete="off" required>
+      </div>
+      <div class="field">
+        <label>زمان‌بندی</label>
+        <div class="duration-toggle">
+          <button type="button" class="pill-opt active" data-mode="time">ساعت شروع و پایان</button>
+          <button type="button" class="pill-opt" data-mode="duration">فقط مدت زمان</button>
+        </div>
+        <div class="row2" id="timeModeFields">
+          <input type="time" id="taskStart" value="09:00">
+          <input type="time" id="taskEnd" value="09:30">
+        </div>
+        <div id="durationModeFields" style="display:none;">
+          <input type="number" id="taskDuration" min="5" step="5" placeholder="مدت زمان به دقیقه (مثلاً ۳۰)">
+        </div>
+      </div>
+      <div class="field">
+        <label>اولویت</label>
+        <div class="pill-group" id="priorityGroup">
+          <button type="button" class="pill-opt" data-val="کم">کم</button>
+          <button type="button" class="pill-opt active" data-val="متوسط">متوسط</button>
+          <button type="button" class="pill-opt" data-val="زیاد">زیاد</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>دسته‌بندی</label>
+        <div class="pill-group cat-group" id="categoryGroup"></div>
+      </div>
+      <div class="field">
+        <label>تکرار</label>
+        <div class="pill-group" id="repeatGroup">
+          <button type="button" class="pill-opt active" data-val="none">بدون تکرار</button>
+          <button type="button" class="pill-opt" data-val="daily">روزانه</button>
+          <button type="button" class="pill-opt" data-val="weekly">هفتگی</button>
+          <button type="button" class="pill-opt" data-val="custom">روزهای خاص هفته</button>
+        </div>
+        <div class="repeat-days" id="repeatDaysWrap" style="display:none;margin-top:10px;"></div>
+      </div>
+      <div class="field" id="reminderFieldWrap">
+        <label>یادآوری</label>
+        <div class="pill-group" id="reminderGroup">
+          <button type="button" class="pill-opt active" data-val="none">بدون یادآوری</button>
+          <button type="button" class="pill-opt" data-val="onstart">در زمان شروع</button>
+          <button type="button" class="pill-opt" data-val="5">۵ دقیقه قبل</button>
+          <button type="button" class="pill-opt" data-val="10">۱۰ دقیقه قبل</button>
+          <button type="button" class="pill-opt" data-val="15">۱۵ دقیقه قبل</button>
+          <button type="button" class="pill-opt" data-val="30">۳۰ دقیقه قبل</button>
+          <button type="button" class="pill-opt" data-val="60">۱ ساعت قبل</button>
+        </div>
+        <div class="hint" id="reminderHint">یادآوری فقط برای کارهایی که «ساعت شروع» دارند فعال می‌شود. برای کارهای تکراری، یادآوری هر بار متناسب با همان وقوع تنظیم می‌شود.</div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn danger" id="taskDeleteBtn" style="display:none;">${trash}</button>
+        <button type="button" class="btn ghost" id="taskCancelBtn">انصراف</button>
+        <button type="submit" class="btn primary">ذخیره کار</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Auto schedule modal -->
+<div class="overlay" id="autoOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>برنامه‌ریزی خودکار</h3>
+      <button id="autoModalClose">✕</button>
+    </div>
+    <div class="field">
+      <label>کارها (هر خط: عنوان — مدت زمان به دقیقه)</label>
+      <textarea id="autoTasksInput" style="min-height:120px;" placeholder="ریاضی بخونم — 60
+ورزش کنم — 45
+اتاقم رو مرتب کنم — 30
+خرید کنم — 40"></textarea>
+      <div class="hint">اگر مدت زمان را ننویسی، به‌طور پیش‌فرض ۳۰ دقیقه در نظر گرفته می‌شود.</div>
+    </div>
+    <div class="field">
+      <label>تاریخ</label>
+      <input type="text" id="autoDate" inputmode="none" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>بازه زمانی</label>
+      <div class="row2">
+        <input type="time" id="autoStart" value="15:00">
+        <input type="time" id="autoEnd" value="22:00">
+      </div>
+    </div>
+    <div class="field">
+      <label>فاصله استراحت بین کارها (دقیقه)</label>
+      <input type="number" id="autoBreak" value="15" min="0" step="5">
+    </div>
+    <div id="autoResultBox"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" id="autoCancelBtn">انصراف</button>
+      <button type="button" class="btn primary" id="autoRunBtn">برنامه‌ریزی کن</button>
+    </div>
+  </div>
+</div>
+
+<!-- Postpone modal -->
+<div class="overlay" id="postponeOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>انتقال کار به زمان دیگر</h3>
+      <button id="postponeModalClose">✕</button>
+    </div>
+    <input type="hidden" id="postponeInstanceId">
+    <div class="field">
+      <label>تاریخ جدید</label>
+      <input type="text" id="postponeDate" inputmode="none" autocomplete="off">
+    </div>
+    <div class="row2">
+      <div class="field"><label>ساعت شروع</label><input type="time" id="postponeStart"></div>
+      <div class="field"><label>ساعت پایان</label><input type="time" id="postponeEnd"></div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" id="postponeCancelBtn">انصراف</button>
+      <button type="button" class="btn primary" id="postponeSaveBtn">انتقال کار</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   DATA LAYER
+   انتزاعی از localStorage. برای انتقال آینده به SQLite یا
+   یک دیتابیس واقعی، کافی است پیاده‌سازی متدهای get/set در
+   شیء DataStore عوض شود؛ بقیه‌ی برنامه بدون تغییر کار می‌کند.
+   ========================================================= */
+const KEYS = {
+  tasks: 'planner.tasks.v1',
+  completions: 'planner.completions.v1',
+  moves: 'planner.moves.v1',
+  settings: 'planner.settings.v1'
+};
+
+const DataStore = {
+  get(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      if(raw === null) return fallback;
+      return JSON.parse(raw);
+    }catch(e){
+      console.warn('DataStore.get failed for', key, e);
+      return fallback;
+    }
+  },
+  set(key, value){
+    try{
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    }catch(e){
+      console.warn('DataStore.set failed for', key, e);
+      return false;
+    }
+  }
+};
+
+let tasks = DataStore.get(KEYS.tasks, []);
+let completions = DataStore.get(KEYS.completions, {});
+let moves = DataStore.get(KEYS.moves, {});
+let settings = DataStore.get(KEYS.settings, { theme: 'light' });
+
+function persistTasks(){ DataStore.set(KEYS.tasks, tasks); }
+function persistCompletions(){ DataStore.set(KEYS.completions, completions); }
+function persistMoves(){ DataStore.set(KEYS.moves, moves); }
+function persistSettings(){ DataStore.set(KEYS.settings, settings); }
+
+/* =========================================================
+   UTILS
+   ========================================================= */
+const CATEGORIES = ['درس','کار','ورزش','شخصی','خرید','استراحت','سایر'];
+const REMINDER_LABELS = {
+  none: 'بدون یادآوری',
+  onstart: 'زمان شروع',
+  '5': '۵ دقیقه قبل',
+  '10': '۱۰ دقیقه قبل',
+  '15': '۱۵ دقیقه قبل',
+  '30': '۳۰ دقیقه قبل',
+  '60': '۱ ساعت قبل'
+};
+function reminderOffsetMinutes(val){
+  if(!val || val === 'none') return null;
+  if(val === 'onstart') return 0;
+  const n = parseInt(val, 10);
+  return isNaN(n) ? null : n;
+}
+const WEEKDAYS_FA = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+const WEEKDAYS_SHORT = ['ی','د','س','چ','پ','ج','ش'];
+const PERSIAN_DIGITS = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+const JALALI_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+
+/* =========================================================
+   JALALI <-> GREGORIAN CONVERSION (دقیق)
+   پیاده‌سازی الگوریتم استاندارد تقویم جلالی (jalaali)، مبتنی بر
+   قاعده‌ی ۳۳ ساله؛ فقط برای نمایش و انتخاب تاریخ استفاده می‌شود.
+   تاریخ‌های ذخیره‌شده در برنامه همچنان به فرمت میلادی (YYYY-MM-DD)
+   باقی می‌مانند تا هیچ داده‌ای خراب نشود.
+   ========================================================= */
+function jDiv(a, b){ return Math.trunc(a / b); }
+function jMod(a, b){ return a - Math.trunc(a / b) * b; }
+
+function jalCal(jy){
+  const breaks = [-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178];
+  const bl = breaks.length;
+  const gy = jy + 621;
+  let leapJ = -14, jp = breaks[0], jm, jump, n, i;
+  for(i = 1; i < bl; i += 1){
+    jm = breaks[i];
+    jump = jm - jp;
+    if(jy < jm) break;
+    leapJ = leapJ + jDiv(jump, 33) * 8 + jDiv(jMod(jump, 33), 4);
+    jp = jm;
+  }
+  n = jy - jp;
+  leapJ = leapJ + jDiv(n, 33) * 8 + jDiv(jMod(n, 33) + 3, 4);
+  if(jMod(jump, 33) === 4 && jump - n === 4) leapJ += 1;
+  const leapG = jDiv(gy, 4) - jDiv((jDiv(gy, 100) + 1) * 3, 4) - 150;
+  const march = 20 + leapJ - leapG;
+  if(jump - n < 6) n = n - jump + jDiv(jump, 33) * 33;
+  let leap = jMod(jMod(n + 1, 33) - 1, 4);
+  if(leap === -1) leap = 4;
+  return { leap, gy, march };
+}
+function g2d(gy, gm, gd){
+  let d = jDiv((gy + jDiv(gm - 8, 6) + 100100) * 1461, 4)
+        + jDiv(153 * jMod(gm + 9, 12) + 2, 5)
+        + gd - 34840408;
+  d = d - jDiv(jDiv(gy + 100100 + jDiv(gm - 8, 6), 100) * 3, 4) + 752;
+  return d;
+}
+function d2g(jdn){
+  let j = 4 * jdn + 139361631;
+  j = j + jDiv(jDiv(4 * jdn + 183187720, 146097) * 3, 4) * 4 - 3908;
+  const i = jDiv(jMod(j, 1461), 4) * 5 + 308;
+  const gd = jDiv(jMod(i, 153), 5) + 1;
+  const gm = jMod(jDiv(i, 153), 12) + 1;
+  const gy = jDiv(j, 1461) - 100100 + jDiv(8 - gm, 6);
+  return { gy, gm, gd };
+}
+function j2d(jy, jm, jd){
+  const r = jalCal(jy);
+  return g2d(r.gy, 3, r.march) + (jm - 1) * 31 - jDiv(jm, 7) * (jm - 7) + jd - 1;
+}
+function d2j(jdn){
+  const gy = d2g(jdn).gy;
+  let jy = gy - 621;
+  const r = jalCal(jy);
+  const jdn1f = g2d(gy, 3, r.march);
+  let k = jdn - jdn1f, jm, jd;
+  if(k >= 0){
+    if(k <= 185){
+      jm = 1 + jDiv(k, 31);
+      jd = jMod(k, 31) + 1;
+      return { jy, jm, jd };
+    }
+    k -= 186;
+  } else {
+    jy -= 1;
+    k += 179;
+    if(r.leap === 1) k += 1;
+  }
+  jm = 7 + jDiv(k, 30);
+  jd = jMod(k, 30) + 1;
+  return { jy, jm, jd };
+}
+function toJalaali(gy, gm, gd){ return d2j(g2d(gy, gm, gd)); }
+function toGregorian(jy, jm, jd){ return d2g(j2d(jy, jm, jd)); }
+function isLeapJalaaliYear(jy){ return jalCal(jy).leap === 0; }
+function jalaaliMonthLength(jy, jm){
+  if(jm <= 6) return 31;
+  if(jm <= 11) return 30;
+  return isLeapJalaaliYear(jy) ? 30 : 29;
+}
+
+function toPersianDigits(input){
+  return String(input).replace(/[0-9]/g, d => PERSIAN_DIGITS[+d]);
+}
+function toEnglishDigits(input){
+  return String(input).replace(/[۰-۹]/g, d => String(PERSIAN_DIGITS.indexOf(d)));
+}
+function uid(){ return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8); }
+function pad2(n){ return String(n).padStart(2,'0'); }
+function dateToStr(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+function strToDate(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+function todayStr(){ return dateToStr(new Date()); }
+function addDays(dateStr, n){ const d = strToDate(dateStr); d.setDate(d.getDate()+n); return dateToStr(d); }
+function timeToMinutes(t){ if(!t) return null; const [h,m] = t.split(':').map(Number); return h*60+m; }
+function minutesToTime(min){ min = ((min % 1440) + 1440) % 1440; return pad2(Math.floor(min/60))+':'+pad2(min%60); }
+function formatFaDate(dateStr){
+  const d = strToDate(dateStr);
+  const j = toJalaali(d.getFullYear(), d.getMonth()+1, d.getDate());
+  return toPersianDigits(j.jd) + ' ' + JALALI_MONTHS[j.jm-1] + ' ' + toPersianDigits(j.jy);
+}
+function weekdayNameOf(dateStr){ return WEEKDAYS_FA[strToDate(dateStr).getDay()]; }
+
+/* =========================================================
+   JALALI DATE PICKER (برای همه‌ی Date Pickerهای برنامه)
+   ---------------------------------------------------------
+   هر ورودی تاریخ به‌صورت متن غیرقابل‌ویرایش نمایش داده می‌شود و با
+   کلیک، تقویم شمسی کوچکی باز می‌شود. مقدار میلادی (YYYY-MM-DD)
+   در dataset.g همان ورودی نگهداری می‌شود تا فرمت ذخیره‌سازی داخلی
+   برنامه بدون تغییر بماند؛ فقط متن نمایشی و انتخاب تاریخ شمسی است.
+   ========================================================= */
+function setDateInputValue(id, gDateStr){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.dataset.g = gDateStr || '';
+  el.value = gDateStr ? formatFaDate(gDateStr) : '';
+  el.dispatchEvent(new Event('input', { bubbles:true }));
+  el.dispatchEvent(new Event('change', { bubbles:true }));
+}
+function getDateInputValue(id){
+  const el = document.getElementById(id);
+  return (el && el.dataset.g) ? el.dataset.g : '';
+}
+
+const JDatePicker = {
+  el: null,
+  targetInput: null,
+  cursor: { jy: 1400, jm: 1 },
+  outsideHandler: null,
+  scrollHandler: null,
+  resizeHandler: null,
+
+  ensureEl(){
+    if(this.el) return this.el;
+    const pop = document.createElement('div');
+    pop.className = 'jdp-popup';
+    pop.innerHTML = `
+      <div class="jdp-nav">
+        <button type="button" class="icon-btn jdp-prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <div class="jdp-label"></div>
+        <button type="button" class="icon-btn jdp-next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="jdp-grid"></div>
+      <div class="jdp-footer">
+        <button type="button" class="jdp-clear">پاک کردن</button>
+        <button type="button" class="jdp-today">امروز</button>
+      </div>`;
+    document.body.appendChild(pop);
+    pop.addEventListener('click', e => e.stopPropagation());
+    pop.querySelector('.jdp-prev').addEventListener('click', () => {
+      this.cursor.jm -= 1;
+      if(this.cursor.jm < 1){ this.cursor.jm = 12; this.cursor.jy -= 1; }
+      this.renderGrid();
+    });
+    pop.querySelector('.jdp-next').addEventListener('click', () => {
+      this.cursor.jm += 1;
+      if(this.cursor.jm > 12){ this.cursor.jm = 1; this.cursor.jy += 1; }
+      this.renderGrid();
+    });
+    pop.querySelector('.jdp-today').addEventListener('click', () => this.pick(todayStr()));
+    pop.querySelector('.jdp-clear').addEventListener('click', () => this.pick(''));
+    this.el = pop;
+    return pop;
+  },
+
+  open(input){
+    const pop = this.ensureEl();
+    this.targetInput = input;
+    pop.querySelector('.jdp-clear').style.display = (input.dataset.allowClear === '1') ? '' : 'none';
+    const gVal = input.dataset.g || '';
+    const base = gVal ? strToDate(gVal) : new Date();
+    const j = toJalaali(base.getFullYear(), base.getMonth()+1, base.getDate());
+    this.cursor = { jy: j.jy, jm: j.jm };
+    this.renderGrid();
+    pop.classList.add('open');
+    this.position(input);
+
+    this.outsideHandler = (e) => { if(!pop.contains(e.target) && e.target !== input) this.close(); };
+    this.scrollHandler = () => this.close();
+    this.resizeHandler = () => this.close();
+    document.addEventListener('click', this.outsideHandler);
+    document.addEventListener('keydown', this.escHandler = (e) => { if(e.key === 'Escape') this.close(); });
+    window.addEventListener('scroll', this.scrollHandler, { capture:true });
+    window.addEventListener('resize', this.resizeHandler);
+  },
+
+  close(){
+    if(!this.el) return;
+    this.el.classList.remove('open');
+    if(this.outsideHandler) document.removeEventListener('click', this.outsideHandler);
+    if(this.escHandler) document.removeEventListener('keydown', this.escHandler);
+    if(this.scrollHandler) window.removeEventListener('scroll', this.scrollHandler, { capture:true });
+    if(this.resizeHandler) window.removeEventListener('resize', this.resizeHandler);
+    this.targetInput = null;
+  },
+
+  position(input){
+    const pop = this.el;
+    const r = input.getBoundingClientRect();
+    const popW = pop.offsetWidth;
+    const popH = pop.offsetHeight;
+    let left = r.right - popW;
+    if(left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
+    if(left < 8) left = 8;
+    let top = r.bottom + 6;
+    if(top + popH > window.innerHeight - 8) top = Math.max(8, r.top - popH - 6);
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+  },
+
+  renderGrid(){
+    const { jy, jm } = this.cursor;
+    this.el.querySelector('.jdp-label').textContent = JALALI_MONTHS[jm-1] + ' ' + toPersianDigits(jy);
+    const grid = this.el.querySelector('.jdp-grid');
+    grid.innerHTML = '';
+    WEEKDAYS_SHORT.forEach(w => {
+      const d = document.createElement('div');
+      d.className = 'jdp-dow';
+      d.textContent = w;
+      grid.appendChild(d);
+    });
+    const firstG = toGregorian(jy, jm, 1);
+    const firstOfMonth = new Date(firstG.gy, firstG.gm - 1, firstG.gd);
+    const startOffset = firstOfMonth.getDay();
+    const gridStart = new Date(firstOfMonth);
+    gridStart.setDate(firstOfMonth.getDate() - startOffset);
+    const selectedG = (this.targetInput && this.targetInput.dataset.g) ? this.targetInput.dataset.g : '';
+    for(let i=0;i<42;i++){
+      const cellDate = new Date(gridStart);
+      cellDate.setDate(gridStart.getDate()+i);
+      const cellStr = dateToStr(cellDate);
+      const cellJ = toJalaali(cellDate.getFullYear(), cellDate.getMonth()+1, cellDate.getDate());
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'jdp-cell';
+      if(cellJ.jm !== jm || cellJ.jy !== jy) btn.classList.add('other-month');
+      if(cellStr === todayStr()) btn.classList.add('today');
+      if(cellStr === selectedG) btn.classList.add('selected');
+      btn.textContent = toPersianDigits(cellJ.jd);
+      btn.addEventListener('click', () => this.pick(cellStr));
+      grid.appendChild(btn);
+    }
+  },
+
+  pick(gDateStr){
+    if(this.targetInput) setDateInputValue(this.targetInput.id, gDateStr);
+    this.close();
+  }
+};
+
+function initJalaliDateInput(id, opts){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.readOnly = true;
+  el.classList.add('date-input-fa');
+  if(opts && opts.allowClear) el.dataset.allowClear = '1';
+  if(opts && opts.placeholder) el.placeholder = opts.placeholder;
+  el.addEventListener('click', (e) => { e.stopPropagation(); JDatePicker.open(el); });
+}
+initJalaliDateInput('taskDate');
+initJalaliDateInput('autoDate');
+initJalaliDateInput('postponeDate');
+initJalaliDateInput('filterDate', { allowClear:true, placeholder:'همه تاریخ‌ها' });
+
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .25s ease'; setTimeout(()=>el.remove(), 260); }, 2200);
+}
+
+/* =========================================================
+   TASK / OCCURRENCE ENGINE
+   هر «تسک» یک الگو (template) است. اگر تکرار داشته باشد،
+   در هر تاریخ یک «وقوع» (occurrence) از آن مجازی ساخته می‌شود.
+   شناسه هر وقوع = templateId::تاریخ‌طبیعی
+   وضعیت انجام‌شده و جابه‌جایی هر وقوع جدا ذخیره می‌شود تا
+   ویرایش تسک تکراری، وقوع‌های قبلی را خراب نکند.
+   ========================================================= */
+function findTemplate(id){ return tasks.find(t => t.id === id); }
+
+function naturalDatesMatch(t, dateStr){
+  if(dateStr < t.date) return false;
+  const d = strToDate(dateStr);
+  switch(t.repeat){
+    case 'daily': return true;
+    case 'weekly': return d.getDay() === strToDate(t.date).getDay();
+    case 'custom': return (t.repeatDays||[]).includes(d.getDay());
+    default: return dateStr === t.date;
+  }
+}
+
+function instanceId(templateId, naturalDate){ return templateId + '::' + naturalDate; }
+
+function buildOccurrence(t, naturalDate, displayDate, overrideStart, overrideEnd){
+  const instId = instanceId(t.id, naturalDate);
+  return {
+    instanceId: instId,
+    templateId: t.id,
+    naturalDate,
+    date: displayDate,
+    title: t.title,
+    description: t.description || '',
+    startTime: overrideStart !== undefined ? overrideStart : t.startTime,
+    endTime: overrideEnd !== undefined ? overrideEnd : t.endTime,
+    duration: t.duration || null,
+    priority: t.priority,
+    category: t.category,
+    repeat: t.repeat,
+    reminder: t.reminder || 'none',
+    done: !!completions[instId],
+    moved: !!moves[instId]
+  };
+}
+
+// همه‌ی وقوع‌هایی که باید در تاریخ dateStr نمایش داده شوند را برمی‌گرداند
+function getOccurrencesForDate(dateStr){
+  const result = [];
+  const seen = new Set();
+
+  tasks.forEach(t => {
+    const natMatch = naturalDatesMatch(t, dateStr);
+    const instId = instanceId(t.id, dateStr);
+    const move = moves[instId];
+    if(natMatch){
+      if(!move){
+        result.push(buildOccurrence(t, dateStr, dateStr));
+        seen.add(instId);
+      } else if(move.date === dateStr){
+        result.push(buildOccurrence(t, dateStr, dateStr, move.startTime, move.endTime));
+        seen.add(instId);
+      }
+      // اگر move.date !== dateStr یعنی این وقوع به تاریخ دیگری منتقل شده و اینجا نمایش داده نمی‌شود
+    }
+  });
+
+  // وقوع‌هایی که تاریخ طبیعی‌شان چیز دیگری بوده ولی به dateStr منتقل شده‌اند
+  Object.keys(moves).forEach(instId => {
+    if(seen.has(instId)) return;
+    const move = moves[instId];
+    if(move.date !== dateStr) return;
+    const sep = instId.lastIndexOf('::');
+    const templateId = instId.slice(0, sep);
+    const naturalDate = instId.slice(sep+2);
+    const t = findTemplate(templateId);
+    if(!t) return;
+    result.push(buildOccurrence(t, naturalDate, dateStr, move.startTime, move.endTime));
+  });
+
+  result.sort((a,b) => {
+    const am = timeToMinutes(a.startTime), bm = timeToMinutes(b.startTime);
+    if(am === null && bm === null) return 0;
+    if(am === null) return 1;
+    if(bm === null) return -1;
+    return am - bm;
+  });
+  return result;
+}
+
+function toggleDone(instId){
+  completions[instId] = !completions[instId];
+  if(!completions[instId]) delete completions[instId];
+  persistCompletions();
+  if(typeof ReminderEngine !== 'undefined') ReminderEngine.rebuildSchedule();
+}
+
+function deleteTemplate(templateId){
+  tasks = tasks.filter(t => t.id !== templateId);
+  Object.keys(completions).forEach(k => { if(k.startsWith(templateId+'::')) delete completions[k]; });
+  Object.keys(moves).forEach(k => { if(k.startsWith(templateId+'::')) delete moves[k]; });
+  persistTasks(); persistCompletions(); persistMoves();
+  if(typeof ReminderEngine !== 'undefined') ReminderEngine.rebuildSchedule();
+}
+
+function saveMove(instId, date, startTime, endTime){
+  moves[instId] = { date, startTime, endTime };
+  persistMoves();
+  if(typeof ReminderEngine !== 'undefined') ReminderEngine.rebuildSchedule();
+}
+
+/* =========================================================
+   RENDER: CATEGORY PILLS IN MODAL
+   ========================================================= */
+const categoryGroupEl = document.getElementById('categoryGroup');
+CATEGORIES.forEach((c,i) => {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'pill-opt cat-opt' + (i===6 ? ' active':'');
+  btn.dataset.val = c;
+  btn.textContent = c;
+  btn.style.setProperty('--dot', 'var(--cat-'+c+')');
+  categoryGroupEl.appendChild(btn);
+});
+
+const filterCategoryEl = document.getElementById('filterCategory');
+CATEGORIES.forEach(c => {
+  const opt = document.createElement('option');
+  opt.value = c; opt.textContent = c;
+  filterCategoryEl.appendChild(opt);
+});
+
+/* =========================================================
+   TAB NAVIGATION
+   ========================================================= */
+const tabs = ['today','calendar','tasks','stats'];
+function activateTab(tab){
+  tabs.forEach(t => {
+    document.getElementById('view-'+t).classList.toggle('hidden', t !== tab);
+  });
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.nav-item-m').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  if(tab === 'calendar') renderCalendar();
+  if(tab === 'tasks') renderTasksPage();
+  if(tab === 'stats') renderStats();
+  if(tab === 'today') renderToday();
+}
+document.querySelectorAll('.nav-item, .nav-item-m').forEach(btn => {
+  btn.addEventListener('click', () => activateTab(btn.dataset.tab));
+});
+
+/* =========================================================
+   THEME
+   ========================================================= */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', settings.theme);
+  const isDark = settings.theme === 'dark';
+  document.getElementById('themeSwitch').classList.toggle('on', isDark);
+  document.getElementById('themeSwitchMobile').classList.toggle('on', isDark);
+  document.getElementById('themeLabel').textContent = isDark ? 'حالت روز' : 'حالت شب';
+  syncNativeChrome(isDark);
+}
+function toggleTheme(){
+  settings.theme = settings.theme === 'dark' ? 'light' : 'dark';
+  persistSettings();
+  applyTheme();
+}
+document.getElementById('themeSwitch').addEventListener('click', toggleTheme);
+document.getElementById('themeSwitchMobile').addEventListener('click', toggleTheme);
+applyTheme();
+
+/* =========================================================
+   TASK CARD RENDERING (shared by today + tasks page + calendar day)
+   ========================================================= */
+function checkIcon(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
+}
+function editIconSvg(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+}
+function trashIconSvg(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>';
+}
+function clockIconSvg(){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>';
+}
+
+document.getElementById('taskDeleteBtn').innerHTML = trashIconSvg();
+
+function timeLabel(occ){
+  if(occ.startTime && occ.endTime) return toPersianDigits(occ.startTime) + ' – ' + toPersianDigits(occ.endTime);
+  if(occ.startTime) return toPersianDigits(occ.startTime);
+  if(occ.duration) return toPersianDigits(occ.duration) + ' دقیقه';
+  return 'بدون زمان مشخص';
+}
+
+function isOverdue(occ){
+  if(occ.done) return false;
+  if(occ.date !== todayStr()) return occ.date < todayStr();
+  if(!occ.endTime && !occ.startTime) return false;
+  const nowMin = new Date().getHours()*60 + new Date().getMinutes();
+  const ref = occ.endTime ? timeToMinutes(occ.endTime) : timeToMinutes(occ.startTime);
+  return ref !== null && ref < nowMin;
+}
+
+function renderTaskCard(occ){
+  const card = document.createElement('div');
+  card.className = 'task-card' + (occ.done ? ' done' : '');
+  card.style.borderInlineStartColor = 'var(--cat-'+occ.category+')';
+
+  const overdue = isOverdue(occ);
+
+  card.innerHTML = `
+    <button class="task-check" title="انجام‌شده / انجام‌نشده">${checkIcon()}</button>
+    <div class="task-body">
+      <div class="task-title">${escapeHtml(occ.title)}</div>
+      <div class="task-meta">
+        <span class="chip time">${overdue ? '<span class=\"overdue-tag\">تأخیر · </span>':''}${timeLabel(occ)}</span>
+        <span class="chip prio-${occ.priority}">${occ.priority}</span>
+        <span class="chip">${occ.category}</span>
+        ${occ.repeat !== 'none' ? '<span class="chip">تکرار</span>' : ''}
+        ${occ.moved ? '<span class="chip">جابه‌جا شده</span>' : ''}
+        ${(occ.reminder && occ.reminder !== 'none' && occ.startTime) ? `<span class="chip">🔔 ${escapeHtml(REMINDER_LABELS[occ.reminder]||'')}</span>` : ''}
+      </div>
+    </div>
+    <div class="task-actions">
+      ${overdue ? `<button class="icon-btn postpone-btn" title="انتقال به بعد">${clockIconSvg()}</button>` : ''}
+      <button class="icon-btn edit-btn" title="ویرایش">${editIconSvg()}</button>
+      <button class="icon-btn warn del-btn" title="حذف">${trashIconSvg()}</button>
+    </div>
+  `;
+
+  card.querySelector('.task-check').addEventListener('click', () => {
+    toggleDone(occ.instanceId);
+    refreshCurrentView();
+  });
+  card.querySelector('.edit-btn').addEventListener('click', () => openTaskModal(findTemplate(occ.templateId)));
+  card.querySelector('.del-btn').addEventListener('click', () => {
+    if(confirm('این کار (و در صورت تکراری بودن، همه‌ی نمونه‌های آن) حذف شود؟')){
+      deleteTemplate(occ.templateId);
+      refreshCurrentView();
+      showToast('کار حذف شد');
+    }
+  });
+  const postponeBtn = card.querySelector('.postpone-btn');
+  if(postponeBtn){
+    postponeBtn.addEventListener('click', () => openPostponeModal(occ));
+  }
+  return card;
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function refreshCurrentView(){
+  const activeTab = tabs.find(t => !document.getElementById('view-'+t).classList.contains('hidden'));
+  activateTab(activeTab || 'today');
+}
+
+/* =========================================================
+   TODAY VIEW
+   ========================================================= */
+let todayViewMode = 'list';
+document.querySelectorAll('.view-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-toggle button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    todayViewMode = btn.dataset.view;
+    renderToday();
+  });
+});
+
+function renderToday(){
+  const dstr = todayStr();
+  document.getElementById('todayWeekday').textContent = weekdayNameOf(dstr);
+  document.getElementById('todayDate').textContent = formatFaDate(dstr);
+
+  const occs = getOccurrencesForDate(dstr);
+  const total = occs.length;
+  const done = occs.filter(o => o.done).length;
+  const remaining = total - done;
+  const pct = total ? Math.round((done/total)*100) : 0;
+
+  document.getElementById('statDonePct').textContent = toPersianDigits(pct) + '٪';
+  document.getElementById('statRemaining').textContent = toPersianDigits(remaining);
+  document.getElementById('statTotal').textContent = toPersianDigits(total);
+  document.getElementById('progressRing').style.setProperty('--pct', pct + '%');
+
+  let msg;
+  if(total === 0) msg = 'امروز هیچ کاری ثبت نشده — یکی اضافه کن!';
+  else if(remaining === 0) msg = 'عالی بود! همه‌ی کارهای امروز را انجام دادی 🎉';
+  else msg = `امروز ${toPersianDigits(remaining)} کار باقی مانده داری`;
+  document.getElementById('todayMsg').textContent = msg;
+
+  /* ---- current & next task ---- */
+  const nowMin = new Date().getHours()*60 + new Date().getMinutes();
+  const timedUndone = occs.filter(o => !o.done && o.startTime);
+  let current = null;
+  timedUndone.forEach(o => {
+    const s = timeToMinutes(o.startTime);
+    const e = o.endTime ? timeToMinutes(o.endTime) : (o.duration ? s + o.duration : s + 1);
+    if(s <= nowMin && nowMin < e && !current) current = o;
+  });
+  const next = timedUndone
+    .filter(o => o !== current && timeToMinutes(o.startTime) >= nowMin)
+    .sort((a,b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime))[0] || null;
+
+  const nowWrap = document.getElementById('heroNowWrap');
+  const nextWrap = document.getElementById('heroNextWrap');
+  if(current){
+    nowWrap.style.display = 'flex';
+    document.getElementById('heroNowTitle').textContent = current.title;
+    document.getElementById('heroNowTime').textContent = timeLabel(current);
+  } else {
+    nowWrap.style.display = 'none';
+  }
+  if(next){
+    nextWrap.style.display = 'flex';
+    document.getElementById('heroNextTitle').textContent = next.title;
+    document.getElementById('heroNextTime').textContent = timeLabel(next);
+  } else {
+    nextWrap.style.display = 'none';
+  }
+
+  const listWrap = document.getElementById('todayListWrap');
+  const tlWrap = document.getElementById('todayTimelineWrap');
+  listWrap.style.display = todayViewMode === 'list' ? 'block' : 'none';
+  tlWrap.style.display = todayViewMode === 'timeline' ? 'block' : 'none';
+
+  if(todayViewMode === 'list'){
+    listWrap.innerHTML = '';
+    if(occs.length === 0){
+      listWrap.appendChild(emptyState('هنوز کاری برای امروز ثبت نشده است.'));
+    } else {
+      const list = document.createElement('div');
+      list.className = 'task-list';
+      occs.forEach(o => list.appendChild(renderTaskCard(o)));
+      listWrap.appendChild(list);
+    }
+  } else {
+    renderTimeline(occs, tlWrap);
+  }
+}
+
+function emptyState(text){
+  const el = document.createElement('div');
+  el.className = 'empty';
+  el.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><p>${text}</p>`;
+  return el;
+}
+
+function renderTimeline(occs, wrap){
+  wrap.innerHTML = '';
+  const timed = occs.filter(o => o.startTime).sort((a,b)=>timeToMinutes(a.startTime)-timeToMinutes(b.startTime));
+  const untimed = occs.filter(o => !o.startTime);
+
+  if(timed.length === 0 && untimed.length === 0){
+    wrap.appendChild(emptyState('کاری برای نمایش در Timeline وجود ندارد.'));
+    return;
+  }
+
+  const tl = document.createElement('div');
+  tl.className = 'timeline';
+
+  timed.forEach((o, idx) => {
+    const row = document.createElement('div');
+    row.className = 'tl-row';
+    row.innerHTML = `<div class="tl-time">${toPersianDigits(o.startTime)}</div><div class="tl-dot" style="background:var(--cat-${o.category})"></div>`;
+    const card = renderTaskCard(o);
+    card.classList.add('tl-card');
+    row.appendChild(card);
+    tl.appendChild(row);
+
+    if(idx < timed.length - 1 && o.endTime){
+      const gap = timeToMinutes(timed[idx+1].startTime) - timeToMinutes(o.endTime);
+      if(gap > 0){
+        const brk = document.createElement('div');
+        brk.className = 'tl-row';
+        brk.innerHTML = `<div class="tl-time">${toPersianDigits(o.endTime)}</div><div class="tl-dot" style="background:var(--muted)"></div><div class="tl-break">استراحت (${toPersianDigits(gap)} دقیقه)</div>`;
+        tl.appendChild(brk);
+      }
+    }
+  });
+
+  wrap.appendChild(tl);
+
+  if(untimed.length){
+    const h = document.createElement('div');
+    h.className = 'sec-title';
+    h.style.margin = '18px 0 8px';
+    h.textContent = 'بدون زمان مشخص';
+    wrap.appendChild(h);
+    const list = document.createElement('div');
+    list.className = 'task-list';
+    untimed.forEach(o => list.appendChild(renderTaskCard(o)));
+    wrap.appendChild(list);
+  }
+}
+
+/* =========================================================
+   QUICK ADD (تشخیص ساده متن فارسی)
+   ========================================================= */
+function parseQuickAdd(raw){
+  let text = toEnglishDigits(raw.trim());
+  let date = todayStr();
+  let startTime = null;
+
+  if(/فردا/.test(text)){ date = addDays(todayStr(), 1); text = text.replace(/فردا/g, '').trim(); }
+  else if(/امروز/.test(text)){ date = todayStr(); text = text.replace(/امروز/g,'').trim(); }
+  else if(/پس\s*فردا/.test(text)){ date = addDays(todayStr(), 2); text = text.replace(/پس\s*فردا/g,'').trim(); }
+
+  const timeMatch = text.match(/ساعت\s*(\d{1,2})(?::(\d{2}))?/);
+  if(timeMatch){
+    let h = parseInt(timeMatch[1],10);
+    const m = timeMatch[2] ? parseInt(timeMatch[2],10) : 0;
+    startTime = pad2(h) + ':' + pad2(m);
+    text = text.replace(timeMatch[0], '').trim();
+  }
+
+  text = text.replace(/^[-–—\s]+|[-–—\s]+$/g, '').trim();
+  if(!text) text = raw.trim();
+
+  return { title: text, date, startTime };
+}
+
+document.getElementById('quickAddBtn').addEventListener('click', submitQuickAdd);
+document.getElementById('quickAddInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') submitQuickAdd();
+});
+function submitQuickAdd(){
+  const input = document.getElementById('quickAddInput');
+  const val = input.value.trim();
+  if(!val) return;
+  const parsed = parseQuickAdd(val);
+  const newTask = {
+    id: uid(),
+    title: parsed.title,
+    description: '',
+    date: parsed.date,
+    startTime: parsed.startTime,
+    endTime: parsed.startTime ? minutesToTime(timeToMinutes(parsed.startTime) + 30) : null,
+    duration: parsed.startTime ? null : 30,
+    priority: 'متوسط',
+    category: 'سایر',
+    repeat: 'none',
+    repeatDays: [],
+    reminder: 'none',
+    createdAt: Date.now()
+  };
+  tasks.push(newTask);
+  persistTasks();
+  ReminderEngine.rebuildSchedule();
+  input.value = '';
+  showToast('کار اضافه شد' + (parsed.date !== todayStr() ? ' (برای ' + formatFaDate(parsed.date) + ')' : ''));
+  refreshCurrentView();
+}
+
+/* =========================================================
+   TASK MODAL (افزودن / ویرایش)
+   ========================================================= */
+const taskOverlay = document.getElementById('taskOverlay');
+const taskForm = document.getElementById('taskForm');
+let timeMode = 'time';
+
+function openTaskModal(existing, presetDate){
+  taskForm.reset();
+  document.getElementById('taskId').value = existing ? existing.id : '';
+  document.getElementById('taskModalTitle').textContent = existing ? 'ویرایش کار' : 'افزودن کار';
+  document.getElementById('taskDeleteBtn').style.display = existing ? 'block' : 'none';
+
+  document.getElementById('taskTitle').value = existing ? existing.title : '';
+  document.getElementById('taskDesc').value = existing ? (existing.description||'') : '';
+  setDateInputValue('taskDate', existing ? existing.date : (presetDate || todayStr()));
+
+  timeMode = (existing && !existing.startTime && existing.duration) ? 'duration' : 'time';
+  document.querySelectorAll('#taskForm .duration-toggle .pill-opt').forEach(b => b.classList.toggle('active', b.dataset.mode === timeMode));
+  document.getElementById('timeModeFields').style.display = timeMode === 'time' ? 'grid' : 'none';
+  document.getElementById('durationModeFields').style.display = timeMode === 'duration' ? 'block' : 'none';
+
+  document.getElementById('taskStart').value = existing && existing.startTime ? existing.startTime : '09:00';
+  document.getElementById('taskEnd').value = existing && existing.endTime ? existing.endTime : '09:30';
+  document.getElementById('taskDuration').value = existing && existing.duration ? existing.duration : 30;
+
+  setPillGroup('priorityGroup', existing ? existing.priority : 'متوسط');
+  setPillGroup('categoryGroup', existing ? existing.category : 'سایر');
+  setPillGroup('repeatGroup', existing ? existing.repeat : 'none');
+  renderRepeatDays(existing ? (existing.repeatDays||[]) : []);
+  document.getElementById('repeatDaysWrap').style.display = (existing && existing.repeat === 'custom') ? 'flex' : 'none';
+
+  setPillGroup('reminderGroup', existing && existing.reminder ? existing.reminder : 'none');
+  updateReminderAvailability();
+
+  taskOverlay.classList.add('open');
+}
+function closeTaskModal(){ taskOverlay.classList.remove('open'); }
+
+function setPillGroup(groupId, value){
+  document.querySelectorAll('#'+groupId+' .pill-opt').forEach(b => b.classList.toggle('active', b.dataset.val === value));
+}
+function getPillGroupValue(groupId){
+  const active = document.querySelector('#'+groupId+' .pill-opt.active');
+  return active ? active.dataset.val : null;
+}
+document.querySelectorAll('#priorityGroup .pill-opt, #categoryGroup .pill-opt, #repeatGroup .pill-opt, #reminderGroup .pill-opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.parentElement;
+    group.querySelectorAll('.pill-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if(group.id === 'repeatGroup'){
+      document.getElementById('repeatDaysWrap').style.display = btn.dataset.val === 'custom' ? 'flex' : 'none';
+    }
+  });
+});
+document.querySelectorAll('#taskForm .duration-toggle .pill-opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#taskForm .duration-toggle .pill-opt').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    timeMode = btn.dataset.mode;
+    document.getElementById('timeModeFields').style.display = timeMode === 'time' ? 'grid' : 'none';
+    document.getElementById('durationModeFields').style.display = timeMode === 'duration' ? 'block' : 'none';
+    updateReminderAvailability();
+  });
+});
+
+// یادآوری فقط برای کارهایی معنا دارد که ساعت شروع مشخص دارند
+function updateReminderAvailability(){
+  const wrap = document.getElementById('reminderFieldWrap');
+  if(!wrap) return;
+  const disabled = timeMode !== 'time';
+  wrap.style.opacity = disabled ? '.45' : '';
+  wrap.style.pointerEvents = disabled ? 'none' : '';
+  if(disabled) setPillGroup('reminderGroup', 'none');
+}
+
+function renderRepeatDays(activeDays){
+  const wrap = document.getElementById('repeatDaysWrap');
+  wrap.innerHTML = '';
+  WEEKDAYS_SHORT.forEach((label, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'repeat-day' + (activeDays.includes(idx) ? ' active' : '');
+    btn.textContent = label;
+    btn.dataset.idx = idx;
+    btn.addEventListener('click', () => btn.classList.toggle('active'));
+    wrap.appendChild(btn);
+  });
+}
+function getSelectedRepeatDays(){
+  return Array.from(document.querySelectorAll('#repeatDaysWrap .repeat-day.active')).map(b => +b.dataset.idx);
+}
+
+document.getElementById('fabAdd').addEventListener('click', () => openTaskModal(null, currentContextDate()));
+document.getElementById('taskModalClose').addEventListener('click', closeTaskModal);
+document.getElementById('taskCancelBtn').addEventListener('click', closeTaskModal);
+taskOverlay.addEventListener('click', e => { if(e.target === taskOverlay) closeTaskModal(); });
+
+function currentContextDate(){
+  if(!document.getElementById('view-calendar').classList.contains('hidden')) return selectedCalDate;
+  return todayStr();
+}
+
+taskForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const id = document.getElementById('taskId').value;
+  const title = document.getElementById('taskTitle').value.trim();
+  if(!title){ return; }
+  const date = getDateInputValue('taskDate') || todayStr();
+  const repeat = getPillGroupValue('repeatGroup') || 'none';
+
+  let startTime = null, endTime = null, duration = null;
+  if(timeMode === 'time'){
+    startTime = document.getElementById('taskStart').value || null;
+    endTime = document.getElementById('taskEnd').value || null;
+  } else {
+    duration = parseInt(document.getElementById('taskDuration').value, 10) || 30;
+  }
+
+  const payload = {
+    title,
+    description: document.getElementById('taskDesc').value.trim(),
+    date,
+    startTime, endTime, duration,
+    priority: getPillGroupValue('priorityGroup') || 'متوسط',
+    category: getPillGroupValue('categoryGroup') || 'سایر',
+    repeat,
+    repeatDays: repeat === 'custom' ? getSelectedRepeatDays() : [],
+    reminder: (timeMode === 'time' && startTime) ? (getPillGroupValue('reminderGroup') || 'none') : 'none'
+  };
+
+  if(id){
+    const t = findTemplate(id);
+    if(t) Object.assign(t, payload);
+  } else {
+    tasks.push(Object.assign({ id: uid(), createdAt: Date.now() }, payload));
+  }
+  persistTasks();
+  ReminderEngine.rebuildSchedule();
+  closeTaskModal();
+  refreshCurrentView();
+  showToast(id ? 'تغییرات ذخیره شد' : 'کار جدید اضافه شد');
+});
+
+document.getElementById('taskDeleteBtn').addEventListener('click', () => {
+  const id = document.getElementById('taskId').value;
+  if(!id) return;
+  if(confirm('این کار حذف شود؟')){
+    deleteTemplate(id);
+    closeTaskModal();
+    refreshCurrentView();
+    showToast('کار حذف شد');
+  }
+});
+
+/* =========================================================
+   POSTPONE MODAL
+   ========================================================= */
+const postponeOverlay = document.getElementById('postponeOverlay');
+let postponeTargetInstanceId = null;
+function openPostponeModal(occ){
+  postponeTargetInstanceId = occ.instanceId;
+  setDateInputValue('postponeDate', addDays(occ.date, 1));
+  document.getElementById('postponeStart').value = occ.startTime || '09:00';
+  document.getElementById('postponeEnd').value = occ.endTime || '09:30';
+  postponeOverlay.classList.add('open');
+}
+document.getElementById('postponeModalClose').addEventListener('click', () => postponeOverlay.classList.remove('open'));
+document.getElementById('postponeCancelBtn').addEventListener('click', () => postponeOverlay.classList.remove('open'));
+postponeOverlay.addEventListener('click', e => { if(e.target===postponeOverlay) postponeOverlay.classList.remove('open'); });
+document.getElementById('postponeSaveBtn').addEventListener('click', () => {
+  const date = getDateInputValue('postponeDate');
+  const start = document.getElementById('postponeStart').value;
+  const end = document.getElementById('postponeEnd').value;
+  if(!date){ showToast('تاریخ را انتخاب کن'); return; }
+  saveMove(postponeTargetInstanceId, date, start, end);
+  postponeOverlay.classList.remove('open');
+  refreshCurrentView();
+  showToast('کار به ' + formatFaDate(date) + ' منتقل شد');
+});
+
+/* =========================================================
+   AUTO SCHEDULE
+   ========================================================= */
+const autoOverlay = document.getElementById('autoOverlay');
+document.getElementById('autoScheduleBtn').addEventListener('click', () => {
+  setDateInputValue('autoDate', todayStr());
+  document.getElementById('autoResultBox').innerHTML = '';
+  autoOverlay.classList.add('open');
+});
+document.getElementById('autoModalClose').addEventListener('click', () => autoOverlay.classList.remove('open'));
+document.getElementById('autoCancelBtn').addEventListener('click', () => autoOverlay.classList.remove('open'));
+autoOverlay.addEventListener('click', e => { if(e.target===autoOverlay) autoOverlay.classList.remove('open'); });
+
+function parseAutoLines(raw){
+  return raw.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
+    const eng = toEnglishDigits(line);
+    const m = eng.match(/^(.*?)[-–—]\s*(\d+)\s*(دقیقه|min)?\s*$/);
+    if(m){
+      return { title: m[1].trim(), duration: parseInt(m[2],10) };
+    }
+    const m2 = eng.match(/^(.*?)\s+(\d+)\s*(دقیقه)\s*$/);
+    if(m2){
+      return { title: m2[1].trim(), duration: parseInt(m2[2],10) };
+    }
+    return { title: line, duration: 30 };
+  }).filter(x => x.title);
+}
+
+document.getElementById('autoRunBtn').addEventListener('click', () => {
+  const raw = document.getElementById('autoTasksInput').value;
+  const items = parseAutoLines(raw);
+  const date = getDateInputValue('autoDate') || todayStr();
+  const rangeStart = timeToMinutes(document.getElementById('autoStart').value);
+  const rangeEnd = timeToMinutes(document.getElementById('autoEnd').value);
+  const brk = parseInt(document.getElementById('autoBreak').value, 10) || 0;
+  const resultBox = document.getElementById('autoResultBox');
+
+  if(items.length === 0){
+    resultBox.innerHTML = '<div class="warn-box">حداقل یک کار وارد کن (هر خط یک کار).</div>';
+    return;
+  }
+  if(rangeStart === null || rangeEnd === null || rangeEnd <= rangeStart){
+    resultBox.innerHTML = '<div class="warn-box">بازه زمانی معتبر نیست.</div>';
+    return;
+  }
+
+  let cursor = rangeStart;
+  const placed = [];
+  const skipped = [];
+  items.forEach((item, idx) => {
+    const needed = item.duration;
+    if(cursor + needed <= rangeEnd){
+      const start = cursor;
+      const end = cursor + needed;
+      placed.push({ title: item.title, duration: needed, start: minutesToTime(start), end: minutesToTime(end) });
+      cursor = end;
+      if(idx < items.length - 1 && brk > 0 && cursor + brk <= rangeEnd){
+        cursor += brk;
+      }
+    } else {
+      skipped.push(item.title);
+    }
+  });
+
+  placed.forEach(p => {
+    tasks.push({
+      id: uid(),
+      title: p.title,
+      description: '',
+      date,
+      startTime: p.start,
+      endTime: p.end,
+      duration: null,
+      priority: 'متوسط',
+      category: 'سایر',
+      repeat: 'none',
+      repeatDays: [],
+      reminder: 'none',
+      createdAt: Date.now()
+    });
+  });
+  persistTasks();
+  ReminderEngine.rebuildSchedule();
+
+  let html = `<div class="ok-box">${toPersianDigits(placed.length)} کار برای ${formatFaDate(date)} برنامه‌ریزی شد.</div>`;
+  if(skipped.length){
+    html += `<div class="warn-box">این کارها در این بازه جا نشدند: ${skipped.map(escapeHtml).join('، ')}. بازه زمانی را گسترده‌تر کن یا مدت‌زمان‌ها را کم کن.</div>`;
+  }
+  resultBox.innerHTML = html;
+  refreshCurrentView();
+  if(date === todayStr()) renderToday();
+});
+
+/* =========================================================
+   CALENDAR VIEW
+   ماه/سال جاری تقویم به‌صورت شمسی نگهداری می‌شود؛ تاریخ هر
+   سلول برای ذخیره/جست‌وجوی کارها همچنان به فرمت میلادی
+   (dateToStr/strToDate) تبدیل می‌شود تا با بقیه‌ی برنامه سازگار بماند.
+   ========================================================= */
+let calCursor = (function(){
+  const t = new Date();
+  const j = toJalaali(t.getFullYear(), t.getMonth()+1, t.getDate());
+  return { jy: j.jy, jm: j.jm };
+})();
+let selectedCalDate = todayStr();
+
+function renderCalendar(){
+  const jy = calCursor.jy, jm = calCursor.jm;
+  document.getElementById('calMonthLabel').textContent = JALALI_MONTHS[jm-1] + ' ' + toPersianDigits(jy);
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  WEEKDAYS_SHORT.forEach(w => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow';
+    el.textContent = w;
+    grid.appendChild(el);
+  });
+
+  const firstG = toGregorian(jy, jm, 1);
+  const firstOfMonth = new Date(firstG.gy, firstG.gm - 1, firstG.gd);
+  const startOffset = firstOfMonth.getDay();
+  const gridStart = new Date(firstOfMonth);
+  gridStart.setDate(firstOfMonth.getDate() - startOffset);
+
+  for(let i=0;i<42;i++){
+    const cellDate = new Date(gridStart);
+    cellDate.setDate(gridStart.getDate()+i);
+    const cellStr = dateToStr(cellDate);
+    const cellJ = toJalaali(cellDate.getFullYear(), cellDate.getMonth()+1, cellDate.getDate());
+    const occs = getOccurrencesForDate(cellStr);
+    const done = occs.filter(o=>o.done).length;
+    const pct = occs.length ? Math.round((done/occs.length)*100) : 0;
+
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell';
+    if(cellJ.jm !== jm || cellJ.jy !== jy) cell.classList.add('other-month');
+    if(cellStr === todayStr()) cell.classList.add('today');
+    if(cellStr === selectedCalDate) cell.classList.add('selected');
+
+    cell.innerHTML = `
+      <div class="cal-daynum">${toPersianDigits(cellJ.jd)}</div>
+      ${occs.length ? `<div class="cal-cell-count">${toPersianDigits(done)}/${toPersianDigits(occs.length)}</div><div class="cal-cell-bar"><i style="width:${pct}%"></i></div>` : ''}
+    `;
+    cell.addEventListener('click', () => {
+      selectedCalDate = cellStr;
+      if(cellJ.jm !== jm || cellJ.jy !== jy){ calCursor = { jy: cellJ.jy, jm: cellJ.jm }; }
+      renderCalendar();
+    });
+    grid.appendChild(cell);
+  }
+
+  document.getElementById('calSelectedTitle').textContent = 'برنامه ' + formatFaDate(selectedCalDate) + ' (' + weekdayNameOf(selectedCalDate) + ')';
+  const dayList = document.getElementById('calDayList');
+  dayList.innerHTML = '';
+  const occs = getOccurrencesForDate(selectedCalDate);
+  if(occs.length === 0){
+    dayList.appendChild(emptyState('کاری برای این روز ثبت نشده است.'));
+  } else {
+    const list = document.createElement('div');
+    list.className = 'task-list';
+    occs.forEach(o => list.appendChild(renderTaskCard(o)));
+    dayList.appendChild(list);
+  }
+}
+document.getElementById('calPrev').addEventListener('click', () => {
+  calCursor.jm -= 1;
+  if(calCursor.jm < 1){ calCursor.jm = 12; calCursor.jy -= 1; }
+  renderCalendar();
+});
+document.getElementById('calNext').addEventListener('click', () => {
+  calCursor.jm += 1;
+  if(calCursor.jm > 12){ calCursor.jm = 1; calCursor.jy += 1; }
+  renderCalendar();
+});
+
+/* =========================================================
+   TASKS PAGE (فیلتر + جستجو)
+   ========================================================= */
+let statusFilter = 'all';
+document.querySelectorAll('#statusSeg button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#statusSeg button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    statusFilter = btn.dataset.val;
+    renderTasksPage();
+  });
+});
+['filterCategory','filterPriority','filterDate','searchInput'].forEach(id => {
+  document.getElementById(id).addEventListener('input', renderTasksPage);
+});
+
+function getAllUpcomingOccurrences(){
+  // برای صفحه‌ی «کارها» بازه‌ای منطقی از گذشته نزدیک تا آینده نزدیک را می‌سازیم
+  const results = [];
+  const start = addDays(todayStr(), -60);
+  const end = addDays(todayStr(), 120);
+  let d = start;
+  const seenNonRecurring = new Set();
+  while(d <= end){
+    getOccurrencesForDate(d).forEach(o => results.push(o));
+    d = addDays(d, 1);
+  }
+  return results;
+}
+
+function renderTasksPage(){
+  const cat = document.getElementById('filterCategory').value;
+  const prio = document.getElementById('filterPriority').value;
+  const dateVal = getDateInputValue('filterDate');
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+
+  let occs = getAllUpcomingOccurrences();
+
+  if(statusFilter === 'done') occs = occs.filter(o => o.done);
+  if(statusFilter === 'undone') occs = occs.filter(o => !o.done);
+  if(cat) occs = occs.filter(o => o.category === cat);
+  if(prio) occs = occs.filter(o => o.priority === prio);
+  if(dateVal) occs = occs.filter(o => o.date === dateVal);
+  if(q) occs = occs.filter(o => o.title.toLowerCase().includes(q));
+
+  occs.sort((a,b) => a.date === b.date ? (timeToMinutes(a.startTime||'00:00') - timeToMinutes(b.startTime||'00:00')) : (a.date < b.date ? -1 : 1));
+
+  const wrap = document.getElementById('tasksListWrap');
+  wrap.innerHTML = '';
+  if(occs.length === 0){
+    wrap.appendChild(emptyState('کاری با این فیلترها پیدا نشد.'));
+    return;
+  }
+
+  let lastDate = null;
+  occs.forEach(o => {
+    if(o.date !== lastDate){
+      lastDate = o.date;
+      const h = document.createElement('div');
+      h.className = 'sec-title';
+      h.style.margin = '16px 0 8px';
+      h.textContent = formatFaDate(o.date) + (o.date === todayStr() ? ' (امروز)' : '');
+      wrap.appendChild(h);
+    }
+    wrap.appendChild(renderTaskCard(o));
+  });
+}
+
+/* =========================================================
+   STATS
+   ========================================================= */
+function renderStats(){
+  const todayOccs = getOccurrencesForDate(todayStr());
+  const doneToday = todayOccs.filter(o=>o.done).length;
+  const pctToday = todayOccs.length ? Math.round((doneToday/todayOccs.length)*100) : 0;
+
+  const weekDates = [];
+  for(let i=6;i>=0;i--) weekDates.push(addDays(todayStr(), -i));
+
+  let weekDoneTotal = 0;
+  let successDays = 0;
+  let plannedMinutesTotal = 0;
+  let doneMinutesTotal = 0;
+  const weekCounts = [];
+  const weekTimePlanned = [];
+  const weekTimeDone = [];
+
+  weekDates.forEach(d => {
+    const occs = getOccurrencesForDate(d);
+    const done = occs.filter(o=>o.done).length;
+    weekDoneTotal += done;
+    if(occs.length > 0 && done === occs.length) successDays++;
+    weekCounts.push(done);
+
+    let planned = 0, doneMin = 0;
+    occs.forEach(o => {
+      let mins = 0;
+      if(o.startTime && o.endTime) mins = Math.max(0, timeToMinutes(o.endTime) - timeToMinutes(o.startTime));
+      else if(o.duration) mins = o.duration;
+      planned += mins;
+      if(o.done) doneMin += mins;
+    });
+    plannedMinutesTotal += planned;
+    doneMinutesTotal += doneMin;
+    weekTimePlanned.push(planned);
+    weekTimeDone.push(doneMin);
+  });
+
+  const statGrid = document.getElementById('statGrid');
+  statGrid.innerHTML = '';
+  const stats = [
+    [toPersianDigits(doneToday), 'کار انجام‌شده امروز'],
+    [toPersianDigits(pctToday) + '٪', 'درصد انجام برنامه امروز'],
+    [toPersianDigits(weekDoneTotal), 'کار انجام‌شده در هفته'],
+    [toPersianDigits(successDays), 'روزهای موفق (هفته)'],
+    [toPersianDigits(Math.round(plannedMinutesTotal/60*10)/10), 'ساعت برنامه‌ریزی‌شده (هفته)'],
+    [toPersianDigits(Math.round(doneMinutesTotal/60*10)/10), 'ساعت انجام‌شده (هفته)']
+  ];
+  stats.forEach(([val, label]) => {
+    const c = document.createElement('div');
+    c.className = 'stat-card';
+    c.innerHTML = `<b>${val}</b><span>${label}</span>`;
+    statGrid.appendChild(c);
+  });
+
+  const weekChart = document.getElementById('weekChart');
+  weekChart.innerHTML = '';
+  const maxCount = Math.max(1, ...weekCounts);
+  weekDates.forEach((d, i) => {
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const h = Math.round((weekCounts[i]/maxCount) * 100);
+    col.innerHTML = `<div class="bar-value">${toPersianDigits(weekCounts[i])}</div><div class="bar" style="height:${h}%"></div><div class="bar-label">${WEEKDAYS_SHORT[strToDate(d).getDay()]}</div>`;
+    weekChart.appendChild(col);
+  });
+
+  const timeChart = document.getElementById('timeChart');
+  timeChart.innerHTML = '';
+  const maxTime = Math.max(1, ...weekTimePlanned, ...weekTimeDone);
+  weekDates.forEach((d, i) => {
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const hPlanned = Math.round((weekTimePlanned[i]/maxTime)*100);
+    const hDone = Math.round((weekTimeDone[i]/maxTime)*100);
+    col.innerHTML = `
+      <div style="display:flex;align-items:flex-end;gap:3px;height:100%;">
+        <div class="bar" style="height:${hPlanned}%;background:var(--surface-2);border:1px dashed var(--muted);"></div>
+        <div class="bar" style="height:${hDone}%;"></div>
+      </div>
+      <div class="bar-label">${WEEKDAYS_SHORT[strToDate(d).getDay()]}</div>`;
+    timeChart.appendChild(col);
+  });
+}
+
+/* =========================================================
+   REMINDER ARCHITECTURE
+   ---------------------------------------------------------
+   NotificationPort: انتزاعی از مکانیزم واقعی نمایش اعلان.
+   امروز پیاده‌سازی آن (WebNotificationPort) مبتنی بر Web
+   Notification API + setTimeout است، اما امضای متدها
+   (requestPermission / scheduleAt / cancel / cancelAll) عیناً
+   با Capacitor Local Notifications هم‌خوان است. برای اتصال به
+   آلارم واقعی اندروید کافی است بعداً یک آداپتور جدید مثل
+   CapacitorNotificationPort ساخته شود که scheduleAt را با
+   LocalNotifications.schedule({...}) پیاده‌سازی کند و دیگر
+   نیازی به setTimeout نباشد (خود سیستم‌عامل زمان‌بندی می‌کند).
+   بقیه‌ی ReminderEngine و کل برنامه بدون تغییر کار خواهند کرد.
+
+   ReminderEngine.rebuildSchedule() نقطه‌ی ورودی اصلی است.
+   این تابع بعد از هر تغییری در تسک‌ها (افزودن/ویرایش/حذف/
+   انجام‌شدن/جابه‌جایی) فراخوانی می‌شود و همچنین هر ۶۰ ثانیه
+   به‌صورت خودکار اجرا می‌گردد تا با گذر روز هماهنگ بماند.
+   چون این تابع از getOccurrencesForDate استفاده می‌کند، تکرار
+   کارها (روزانه/هفتگی/روزهای خاص) و جابه‌جایی‌ها (postpone) را
+   خودش به‌طور خودکار در نظر می‌گیرد — یعنی یادآوری کارهای
+   تکراری نیازی به کد جداگانه ندارد.
+   ========================================================= */
+
+function WebNotificationPort(){
+  this.supported = typeof Notification !== 'undefined';
+  this.permissionGranted = false;
+  this.timers = new Map(); // id -> setTimeout handle
+}
+WebNotificationPort.prototype.init = function(){
+  if(this.supported && Notification.permission === 'granted'){
+    this.permissionGranted = true;
+  }
+};
+WebNotificationPort.prototype.requestPermission = function(){
+  if(this.supported && Notification.permission === 'default'){
+    Notification.requestPermission().then(p => { this.permissionGranted = (p === 'granted'); });
+  }
+};
+// معادل LocalNotifications.schedule در نسخه‌ی آینده‌ی Capacitor
+WebNotificationPort.prototype.scheduleAt = function(id, payload, whenDate){
+  this.cancel(id);
+  const delay = whenDate.getTime() - Date.now();
+  if(delay < 0) return;
+  const handle = setTimeout(() => {
+    this.timers.delete(id);
+    this.present(payload);
+  }, Math.min(delay, 2147000000)); // سقف مجاز setTimeout در مرورگر
+  this.timers.set(id, handle);
+};
+WebNotificationPort.prototype.present = function(payload){
+  if(this.permissionGranted){
+    try{ new Notification(payload.title, { body: payload.body }); return; }
+    catch(e){ /* در صورت خطا به toast برمی‌گردیم */ }
+  }
+  showToast(payload.body);
+};
+WebNotificationPort.prototype.cancel = function(id){
+  const h = this.timers.get(id);
+  if(h){ clearTimeout(h); this.timers.delete(id); }
+};
+WebNotificationPort.prototype.cancelAll = function(){
+  this.timers.forEach(h => clearTimeout(h));
+  this.timers.clear();
+};
+
+// ---------------------------------------------------------
+// CapacitorNotificationPort — همان چیزی که در کامنت بالا پیش‌بینی
+// شده بود: پیاده‌سازی واقعی روی @capacitor/local-notifications.
+// وقتی برنامه داخل اپ اندروید (Capacitor) اجرا شود، این پورت
+// به‌جای WebNotificationPort استفاده می‌شود و به‌جای setTimeout،
+// زمان‌بندی را خود سیستم‌عامل انجام می‌دهد (حتی اگر برنامه بسته باشد).
+function CapacitorNotificationPort(){
+  this.supported = true;
+  this.permissionGranted = false;
+  this.ids = new Map(); // id رشته‌ای برنامه -> id عددی اندروید
+  this.LN = (window.Capacitor && window.Capacitor.Plugins) ? window.Capacitor.Plugins.LocalNotifications : null;
+}
+CapacitorNotificationPort.prototype.init = function(){
+  if(!this.LN) return;
+  this.requestPermission();
+};
+CapacitorNotificationPort.prototype.requestPermission = function(){
+  if(!this.LN) return;
+  this.LN.requestPermissions().then((res) => {
+    this.permissionGranted = !!(res && res.display === 'granted');
+  }).catch(() => {});
+};
+// Local Notifications اندروید فقط id عددی ۳۲بیتی قبول می‌کند
+CapacitorNotificationPort.prototype._numId = function(strId){
+  let h = 0;
+  for(let i = 0; i < strId.length; i++){ h = (h * 31 + strId.charCodeAt(i)) | 0; }
+  return Math.abs(h) || 1;
+};
+CapacitorNotificationPort.prototype.scheduleAt = function(id, payload, whenDate){
+  if(!this.LN) return;
+  const numId = this._numId(id);
+  this.ids.set(id, numId);
+  this.LN.schedule({
+    notifications: [{
+      id: numId,
+      title: payload.title,
+      body: payload.body,
+      schedule: { at: whenDate, allowWhileIdle: true }
+    }]
+  }).catch((e) => { console.warn('LocalNotifications.schedule failed', e); });
+};
+CapacitorNotificationPort.prototype.present = function(payload){
+  if(!this.LN) return;
+  this.LN.schedule({
+    notifications: [{
+      id: this._numId('now::' + Date.now() + Math.random()),
+      title: payload.title,
+      body: payload.body,
+      schedule: { at: new Date(Date.now() + 300) }
+    }]
+  }).catch(() => {});
+};
+CapacitorNotificationPort.prototype.cancel = function(id){
+  if(!this.LN || !this.ids.has(id)) return;
+  const numId = this.ids.get(id);
+  this.LN.cancel({ notifications: [{ id: numId }] }).catch(() => {});
+  this.ids.delete(id);
+};
+CapacitorNotificationPort.prototype.cancelAll = function(){
+  if(!this.LN) return;
+  this.LN.getPending().then((res) => {
+    const list = (res && res.notifications) || [];
+    if(list.length) this.LN.cancel({ notifications: list.map(n => ({ id: n.id })) }).catch(() => {});
+  }).catch(() => {});
+  this.ids.clear();
+};
+function isNativeApp(){
+  try{ return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); }
+  catch(e){ return false; }
+}
+
+const ReminderEngine = {
+  port: isNativeApp() ? new CapacitorNotificationPort() : new WebNotificationPort(),
+  firedRecently: new Set(),
+
+  init(){
+    this.port.init();
+    this.rebuildSchedule();
+    setInterval(() => this.rebuildSchedule(), 60 * 1000);
+  },
+
+  requestPermission(){
+    this.port.requestPermission();
+  },
+
+  // زمان دقیق «لحظه‌ی یادآوری» برای یک وقوع مشخص را برمی‌گرداند
+  computeFireDate(occ){
+    if(!occ.startTime) return null;
+    const offset = reminderOffsetMinutes(occ.reminder);
+    if(offset === null) return null;
+    const fireMin = timeToMinutes(occ.startTime) - offset;
+    const d = strToDate(occ.date);
+    d.setMinutes(d.getMinutes() + fireMin);
+    return d;
+  },
+
+  // زمان‌بندی همه‌ی یادآوری‌های امروز و فردا را از نو می‌سازد.
+  // چون هر ۶۰ ثانیه دوباره اجرا می‌شود، همیشه با آخرین وضعیت
+  // تسک‌ها (شامل تکرار و جابه‌جایی‌ها) هماهنگ می‌ماند.
+  rebuildSchedule(){
+    this.port.cancelAll();
+    const now = Date.now();
+    [todayStr(), addDays(todayStr(), 1)].forEach(dstr => {
+      getOccurrencesForDate(dstr).forEach(occ => {
+        if(occ.done || !occ.reminder || occ.reminder === 'none') return;
+        const fireDate = this.computeFireDate(occ);
+        if(!fireDate) return;
+        const id = occ.instanceId + '::' + occ.reminder;
+        const payload = {
+          title: 'یادآوری روزانه',
+          body: occ.title + (occ.startTime ? ' — ساعت ' + toPersianDigits(occ.startTime) : '')
+        };
+        if(fireDate.getTime() <= now){
+          // اگر لحظه‌ی یادآوری به‌تازگی گذشته (مثلاً صفحه همین الان باز شده)، فوراً نمایش بده
+          if(now - fireDate.getTime() < 2 * 60 * 1000 && !this.firedRecently.has(id)){
+            this.firedRecently.add(id);
+            this.port.present(payload);
+          }
+          return;
+        }
+        this.firedRecently.delete(id);
+        this.port.scheduleAt(id, payload, fireDate);
+      });
+    });
+  }
+};
+ReminderEngine.init();
+document.body.addEventListener('click', () => ReminderEngine.requestPermission(), { once: true });
+
+/* =========================================================
+   INIT
+   ========================================================= */
+setDateInputValue('autoDate', todayStr());
+activateTab('today');
+
+/* =========================================================
+   ANDROID / CAPACITOR BRIDGE
+   این بخش فقط داخل اپ اندروید (Capacitor) فعال می‌شود و هیچ
+   تأثیری روی نسخه‌ی وب ندارد. طراحی، رنگ‌ها و منطق برنامه
+   دست‌نخورده باقی می‌مانند؛ این کد فقط برنامه را با محیط
+   Native هماهنگ می‌کند (نوار وضعیت، دکمه Back، Splash Screen).
+   ========================================================= */
+function syncNativeChrome(isDark){
+  if(!isNativeApp()) return;
+  try{
+    const SB = window.Capacitor.Plugins && window.Capacitor.Plugins.StatusBar;
+    if(SB){
+      SB.setStyle({ style: isDark ? 'DARK' : 'LIGHT' }).catch(() => {});
+      SB.setBackgroundColor({ color: isDark ? '#14100A' : '#F7F1E3' }).catch(() => {});
+    }
+  }catch(e){ /* پلاگین نصب نشده — بی‌خطر نادیده گرفته می‌شود */ }
+}
+
+function handleAndroidBackButton(){
+  // ترتیب اولویت بستن: Date Picker باز > مودال‌های باز > رفتار پیش‌فرض اندروید
+  if(typeof JDatePicker !== 'undefined' && JDatePicker.el && JDatePicker.el.classList.contains('open')){
+    JDatePicker.close();
+    return true;
+  }
+  const openOverlays = [postponeOverlay, autoOverlay, taskOverlay].filter(el => el && el.classList.contains('open'));
+  if(openOverlays.length){
+    if(postponeOverlay.classList.contains('open')) postponeOverlay.classList.remove('open');
+    else if(autoOverlay.classList.contains('open')) autoOverlay.classList.remove('open');
+    else closeTaskModal();
+    return true;
+  }
+  return false; // چیزی برای بستن نبود؛ رفتار پیش‌فرض (خروج/پس‌زمینه) اجرا شود
+}
+
+(function initCapacitorBridge(){
+  if(!isNativeApp()) return;
+  const Plugins = window.Capacitor.Plugins || {};
+
+  // هماهنگ‌سازی اولیه‌ی نوار وضعیت با تم فعلی
+  syncNativeChrome(settings.theme === 'dark');
+
+  // مدیریت دکمه Back فیزیکی/سیستمی اندروید
+  if(Plugins.App && Plugins.App.addListener){
+    Plugins.App.addListener('backButton', () => {
+      const handled = handleAndroidBackButton();
+      if(!handled) Plugins.App.exitApp();
+    });
+  }
+
+  // بستن Splash Screen بلافاصله بعد از آماده شدن رابط کاربری
+  if(Plugins.SplashScreen && Plugins.SplashScreen.hide){
+    Plugins.SplashScreen.hide().catch(() => {});
+  }
+})();
+
+})();
+</script>
+<script>
+/* =========================================================
+   MICRO-INTERACTION FEEDBACK (press state)
+   ---------------------------------------------------------
+   این اسکریپت هیچ Logic یا Feature‌ای به برنامه اضافه نمی‌کند؛
+   فقط هنگام لمس/کلیک عناصر Interactive یک کلاس CSS بسیار سبک
+   (is-pressed) اضافه/حذف می‌کند تا بازخورد لمسی نرم و سریع
+   (Scale ظریف با transform) داشته باشیم. چون از Event Delegation
+   روی document استفاده شده، برای عناصری که بعداً به‌صورت داینامیک
+   ساخته می‌شوند (Task Card، سلول تقویم و ...) هم بدون نیاز به
+   Bind مجدد کار می‌کند. با prefers-reduced-motion هم هماهنگ است
+   (در CSS مربوطه غیرفعال می‌شود).
+   ========================================================= */
+(function(){
+  var PRESSABLE = [
+    '.task-card', '.tl-card', '.cal-cell', '.jdp-cell',
+    '.nav-item', '.nav-item-m', '.icon-btn', '.chip-btn', '.fab',
+    '.quickadd button', '.view-toggle button', '.seg button',
+    '.pill-opt', '.repeat-day', '.switch', '.btn',
+    '.modal-head button', '.jdp-footer button', '.bottom-nav button',
+    '.task-check',
+    '.filters select', '.field select'
+  ].join(', ');
+
+  var pressedEl = null;
+
+  function clearPress(){
+    if(pressedEl){
+      pressedEl.classList.remove('is-pressed');
+      pressedEl = null;
+    }
+  }
+
+  function startPress(e){
+    var target = e.target.closest ? e.target.closest(PRESSABLE) : null;
+    if(!target) return;
+    if(pressedEl && pressedEl !== target) clearPress();
+    pressedEl = target;
+    target.classList.add('is-pressed');
+  }
+
+  if(window.PointerEvent){
+    document.addEventListener('pointerdown', startPress, { passive:true });
+    document.addEventListener('pointerup', clearPress, { passive:true });
+    document.addEventListener('pointercancel', clearPress, { passive:true });
+  } else {
+    document.addEventListener('touchstart', startPress, { passive:true });
+    document.addEventListener('touchend', clearPress, { passive:true });
+    document.addEventListener('touchcancel', clearPress, { passive:true });
+    document.addEventListener('mousedown', startPress);
+    document.addEventListener('mouseup', clearPress);
+  }
+  window.addEventListener('blur', clearPress);
+})();
+</script>
+</body>
+</html>

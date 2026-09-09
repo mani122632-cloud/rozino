@@ -1,0 +1,31 @@
+{
+  "appId": "com.rozino.app",
+  "appName": "روزینو",
+  "webDir": "www",
+  "backgroundColor": "#F7F1E3",
+  "android": {
+    "backgroundColor": "#F7F1E3",
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 600,
+      "launchAutoHide": false,
+      "backgroundColor": "#F7F1E3",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    "StatusBar": {
+      "overlaysWebView": false,
+      "style": "LIGHT",
+      "backgroundColor": "#F7F1E3"
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_notify",
+      "iconColor": "#AD8A3C"
+    }
+  }
+}
