@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- همان پالت رنگ روزینو در www/index.html (:root)، برای هماهنگی صفحه‌ی
+         تمام‌صفحه‌ی آلارم بومی با ظاهر وب‌اپ. نام‌ها عمداً alarm_ پیشوند دارند
+         تا با رنگ‌های کتابخانه‌ی Capacitor/AppCompat (colorPrimary و...) تداخل نکنند. -->
+    <color name="alarm_bg">#F7F1E3</color>
+    <color name="alarm_surface">#FFFDF7</color>
+    <color name="alarm_surface_2">#F1E7D1</color>
+    <color name="alarm_ink">#241F17</color>
+    <color name="alarm_ink_soft">#6C5F4C</color>
+    <color name="alarm_muted">#A0937A</color>
+    <color name="alarm_gold">#8C6A33</color>
+    <color name="alarm_gold_soft">#EEE2C4</color>
+</resources>

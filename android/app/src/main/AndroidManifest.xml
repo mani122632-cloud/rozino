@@ -33,9 +33,59 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <!-- ===================== سیستم آلارم واقعی روزینو ===================== -->
+
+        <!-- صفحه‌ی تمام‌صفحه‌ی آلارم؛ روی صفحه‌ی قفل هم قابل نمایش است -->
+        <activity
+            android:name=".alarm.AlarmActivity"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:theme="@style/AlarmActivityTheme" />
+
+        <!-- سرویس Foreground پخش صدای آلارم + لرزش + نوتیفیکیشن Full-Screen -->
+        <service
+            android:name=".alarm.AlarmRingService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <!-- دریافت‌کننده‌ی زمان دقیق آلارم از AlarmManager -->
+        <receiver
+            android:name=".alarm.AlarmReceiver"
+            android:exported="false" />
+
+        <!-- زمان‌بندی مجدد آلارم‌های آینده بعد از ری‌استارت گوشی یا آپدیت اپ -->
+        <receiver
+            android:name=".alarm.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
     </application>
 
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- ===================== مجوزهای سیستم آلارم واقعی ===================== -->
+
+    <!-- Android 12+ (API 31): زمان‌بندی آلارم دقیق -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- Android 13+ (API 33): نمایش نوتیفیکیشن (شامل نوتیفیکیشن Full-Screen آلارم) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- نمایش صفحه‌ی آلارم به‌صورت Full-Screen حتی روی صفحه‌ی قفل (Android 14+ محدودتر شده) -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- زمان‌بندی مجدد آلارم بعد از ری‌استارت گوشی -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- بیدار نگه‌داشتن پردازنده در حین پخش صدای آلارم -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- لرزش هنگام فعال شدن آلارم -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- اجرای سرویس Foreground برای پخش صدای آلارم حتی وقتی اپ در پس‌زمینه/بسته است -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 </manifest>

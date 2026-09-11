@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="rtl"
+    android:background="@color/alarm_bg"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:paddingStart="32dp"
+    android:paddingEnd="32dp"
+    android:paddingTop="56dp"
+    android:paddingBottom="40dp"
+    tools:context=".alarm.AlarmActivity">
+
+    <!-- برچسب کوچک بالای صفحه -->
+    <TextView
+        android:id="@+id/alarmKicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="یادآوری روزینو"
+        android:textColor="@color/alarm_gold"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.02" />
+
+    <!-- دایره‌ی طلایی تزئینی، به‌جای آیکون -->
+    <View
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/alarm_dot_gold" />
+
+    <!-- زمان -->
+    <TextView
+        android:id="@+id/alarmTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:fontFamily="sans-serif-light"
+        android:text="۰۸:۰۰"
+        android:textColor="@color/alarm_ink"
+        android:textSize="56sp" />
+
+    <!-- عنوان کار -->
+    <TextView
+        android:id="@+id/alarmTaskTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:gravity="center"
+        android:text="عنوان کار"
+        android:textColor="@color/alarm_ink"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <!-- توضیحات کوتاه (اختیاری) -->
+    <TextView
+        android:id="@+id/alarmDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:lineSpacingExtra="3dp"
+        android:textColor="@color/alarm_ink_soft"
+        android:textSize="15sp"
+        android:visibility="gone"
+        tools:text="توضیح کوتاه کار" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- دکمه‌ی Snooze -->
+    <Button
+        android:id="@+id/btnSnooze"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/alarm_btn_outline"
+        android:elevation="0dp"
+        android:stateListAnimator="@null"
+        android:text="یادآوری بعدی"
+        android:textAllCaps="false"
+        android:textColor="@color/alarm_ink"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- دکمه‌ی خاموش کردن -->
+    <Button
+        android:id="@+id/btnDismiss"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@drawable/alarm_btn_solid"
+        android:elevation="0dp"
+        android:stateListAnimator="@null"
+        android:text="خاموش کردن"
+        android:textAllCaps="false"
+        android:textColor="@color/alarm_surface"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

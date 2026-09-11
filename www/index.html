@@ -2282,14 +2282,158 @@ CapacitorNotificationPort.prototype.cancelAll = function(){
   }).catch(() => {});
   this.ids.clear();
 };
+// ---------------------------------------------------------
+// NativeAlarmPort — پورت آلارم واقعی اندروید (RozinoAlarm).
+// این پورت به‌جای @capacitor/local-notifications مستقیماً پلاگین بومی
+// RozinoAlarmPlugin را صدا می‌زند که با AlarmManager.setExactAndAllowWhileIdle
+// کار می‌کند و باعث می‌شود در لحظه‌ی موعود، به‌جای یک Notification ساده،
+// صدای واقعی آلارم پخش شود و صفحه‌ی تمام‌صفحه (AlarmActivity) باز شود —
+// حتی اگر اپ کاملاً بسته باشد یا صفحه خاموش باشد.
+// امضای متدها با CapacitorNotificationPort یکسان است تا بقیه‌ی
+// ReminderEngine بدون تغییر کار کند.
+function NativeAlarmPort(){
+  this.supported = true;
+  this.permissionGranted = false;
+  this.plugin = (window.Capacitor && window.Capacitor.Plugins) ? window.Capacitor.Plugins.RozinoAlarm : null;
+  // برای نمایش Notification لحظه‌ای (present) از همان پلاگین LocalNotifications
+  // فقط برای درخواست مجوز POST_NOTIFICATIONS استفاده می‌کنیم؛ خودِ آلارم واقعی
+  // نیازی به آن ندارد چون نوتیفیکیشنش را خودِ سرویس بومی می‌سازد.
+  this.LN = (window.Capacitor && window.Capacitor.Plugins) ? window.Capacitor.Plugins.LocalNotifications : null;
+}
+NativeAlarmPort.prototype.init = function(){
+  if(!this.plugin) return;
+  this.requestPermission();
+};
+NativeAlarmPort.prototype.requestPermission = function(){
+  if(!this.plugin) return;
+  // ۱) مجوز نمایش نوتیفیکیشن (Android 13+) — بدون این مجوز حتی نوتیفیکیشن
+  //    Full-Screen سرویس آلارم هم نمایش داده نمی‌شود.
+  if(this.LN){
+    this.LN.requestPermissions().then((res) => {
+      this.permissionGranted = !!(res && res.display === 'granted');
+    }).catch(() => {});
+  }
+  // ۲) بررسی/درخواست مجوز Exact Alarm (Android 12+) و Full-Screen Intent
+  //    (Android 14+). اگر داده نشده باشد، کاربر به صفحه‌ی تنظیمات مناسب
+  //    هدایت می‌شود تا خودش تصمیم بگیرد.
+  this.checkAndPromptSystemPermissions();
+};
+NativeAlarmPort.prototype.checkAndPromptSystemPermissions = function(){
+  if(!this.plugin) return;
+  Promise.resolve(this.plugin.canScheduleExactAlarms ? this.plugin.canScheduleExactAlarms() : { value: true })
+    .then((res) => { if(res && res.value === false) showAlarmPermissionBanner('exact'); })
+    .catch(() => {});
+  Promise.resolve(this.plugin.canUseFullScreenIntent ? this.plugin.canUseFullScreenIntent() : { value: true })
+    .then((res) => { if(res && res.value === false) showAlarmPermissionBanner('fullscreen'); })
+    .catch(() => {});
+};
+NativeAlarmPort.prototype.scheduleAt = function(id, payload, whenDate){
+  if(!this.plugin) return;
+  this.plugin.schedule({
+    id: id,
+    title: payload.title,
+    body: payload.body,
+    taskTitle: payload.taskTitle || payload.title,
+    time: payload.time || '',
+    description: payload.description || '',
+    at: whenDate.getTime()
+  }).catch((e) => { console.warn('RozinoAlarm.schedule failed', e); });
+};
+NativeAlarmPort.prototype.present = function(payload){
+  // این فقط برای «یادآوری‌ای که تازه ساخته/ویرایش شده و لحظه‌اش همین چند
+  // ثانیه/دقیقه‌ی قبل بوده» به کار می‌رود — یعنی زمانی که هرگز فرصت نشده
+  // بود روی AlarmManager ثبت شود (پس هیچ آلارم واقعی برایش پخش نشده).
+  // rebuildSchedule پیش از صدا زدن این متد، بررسی می‌کند که این رخداد قبلاً
+  // با موفقیت روی AlarmManager ثبت شده بود یا نه، تا اگر آلارم واقعی همین
+  // الان به‌درستی پخش شده، اینجا دوباره یک نسخه‌ی تکراری از آن ساخته نشود.
+  if(!this.plugin) return;
+  this.plugin.schedule({
+    id: 'now::' + Date.now() + '::' + Math.random(),
+    title: payload.title,
+    body: payload.body,
+    taskTitle: payload.taskTitle || payload.title,
+    time: payload.time || '',
+    description: payload.description || '',
+    at: Date.now() + 500
+  }).catch(() => {});
+};
+NativeAlarmPort.prototype.cancel = function(id){
+  if(!this.plugin) return;
+  this.plugin.cancel({ id: id }).catch(() => {});
+};
+NativeAlarmPort.prototype.cancelAll = function(){
+  if(!this.plugin) return;
+  this.plugin.cancelAll().catch(() => {});
+};
+
+// یک نوار کوچک و غیرمزاحم که فقط وقتی مجوز لازم داده نشده نمایش داده
+// می‌شود و کاربر را مستقیماً به صفحه‌ی تنظیمات مناسب هدایت می‌کند.
+// طبق خواسته‌ی پروژه، ظاهر و صفحات فعلی روزینو تغییر نکرده‌اند؛ این فقط
+// یک عنصر تازه و اختیاری است که تنها در حالت نیاز واقعی دیده می‌شود.
+function showAlarmPermissionBanner(kind){
+  if(document.getElementById('alarmPermBanner_' + kind)) return;
+  const plugin = (window.Capacitor && window.Capacitor.Plugins) ? window.Capacitor.Plugins.RozinoAlarm : null;
+  if(!plugin) return;
+  const bar = document.createElement('div');
+  bar.id = 'alarmPermBanner_' + kind;
+  bar.style.cssText = 'position:fixed;left:12px;right:12px;bottom:78px;z-index:999;'
+    + 'background:var(--surface,#FFFDF7);color:var(--ink,#241F17);border:1px solid var(--surface-3,#E7D8B7);'
+    + 'border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;'
+    + 'box-shadow:0 8px 24px rgba(0,0,0,.12);font-size:13px;font-weight:600;';
+  const msg = document.createElement('span');
+  msg.style.flex = '1';
+  msg.textContent = kind === 'exact'
+    ? 'برای اجرای دقیق آلارم‌ها، اجازه‌ی «Alarms & reminders» را فعال کنید.'
+    : 'برای نمایش تمام‌صفحه‌ی آلارم روی صفحه‌ی قفل، این مجوز را فعال کنید.';
+  const btn = document.createElement('button');
+  btn.textContent = 'باز کردن تنظیمات';
+  btn.style.cssText = 'background:var(--accent,#8C6A33);color:#fff;border:none;border-radius:10px;'
+    + 'padding:8px 12px;font-size:12.5px;font-weight:700;flex:none;';
+  btn.onclick = () => {
+    const req = kind === 'exact' ? plugin.requestExactAlarmPermission : plugin.requestFullScreenIntentPermission;
+    if(req) req.call(plugin).catch(() => {});
+    bar.remove();
+  };
+  const close = document.createElement('button');
+  close.textContent = '×';
+  close.style.cssText = 'background:transparent;border:none;color:var(--muted,#A0937A);font-size:18px;flex:none;line-height:1;';
+  close.onclick = () => bar.remove();
+  bar.appendChild(msg); bar.appendChild(btn); bar.appendChild(close);
+  document.body.appendChild(bar);
+}
+
 function isNativeApp(){
   try{ return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); }
   catch(e){ return false; }
 }
 
+// انتخاب پورت: روی اندروید اگر پلاگین بومی RozinoAlarm در دسترس باشد
+// (یعنی build جدید نصب شده)، از آلارم واقعی استفاده می‌شود. اگر به هر
+// دلیلی پلاگین موجود نبود (مثلاً نسخه‌ی قدیمی‌تر APK)، به‌صورت خودکار به
+// همان CapacitorNotificationPort فعلی (نوتیفیکیشن ساده) برمی‌گردیم تا هیچ
+// رفتاری خراب نشود.
+function selectNotificationPort(){
+  if(isNativeApp()){
+    if(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.RozinoAlarm){
+      return new NativeAlarmPort();
+    }
+    return new CapacitorNotificationPort();
+  }
+  return new WebNotificationPort();
+}
+
 const ReminderEngine = {
-  port: isNativeApp() ? new CapacitorNotificationPort() : new WebNotificationPort(),
+  port: selectNotificationPort(),
   firedRecently: new Set(),
+  // شناسه‌ی آلارم‌هایی که هم‌اکنون واقعاً روی سیستم (AlarmManager) ثبت‌اند؛
+  // برای محاسبه‌ی diff در rebuildSchedule استفاده می‌شود تا هیچ‌وقت با یک
+  // «لغو همه و از نو» ناقص/نیمه‌کاره، آلارم‌های درست از بین نروند.
+  scheduledIds: new Set(),
+  // افق زمان‌بندی: به‌جای فقط امروز/فردا، تا این تعداد روز آینده را هم
+  // از قبل روی AlarmManager ثبت می‌کنیم تا کاربر لازم نباشد هر روز اپ را
+  // باز کند تا یادآوری‌های دورتر ثبت شوند. چون AlarmManager هر آلارم را
+  // مستقل از حیات پروسه‌ی اپ نگه می‌دارد، همین‌ها به‌موقع فعال می‌شوند.
+  SCHEDULE_HORIZON_DAYS: 30,
 
   init(){
     this.port.init();
@@ -2312,34 +2456,87 @@ const ReminderEngine = {
     return d;
   },
 
-  // زمان‌بندی همه‌ی یادآوری‌های امروز و فردا را از نو می‌سازد.
-  // چون هر ۶۰ ثانیه دوباره اجرا می‌شود، همیشه با آخرین وضعیت
-  // تسک‌ها (شامل تکرار و جابه‌جایی‌ها) هماهنگ می‌ماند.
+  // زمان‌بندی یادآوری‌های امروز تا SCHEDULE_HORIZON_DAYS روز آینده را
+  // به‌روزرسانی می‌کند. چون هر ۶۰ ثانیه دوباره اجرا می‌شود، همیشه با آخرین
+  // وضعیت تسک‌ها (شامل تکرار و جابه‌جایی‌ها) هماهنگ می‌ماند.
+  //
+  // به‌جای «همه را لغو کن، بعد از نو بساز» (که با هر خطای میانی می‌توانست
+  // آلارم‌های درست را هم برای همیشه گم کند)، اینجا فقط diff بین وضعیت قبلی
+  // و جدید اعمال می‌شود: فقط چیزی که واقعاً دیگر لازم نیست cancel می‌شود، و
+  // بقیه صرفاً schedule/reschedule (که خودش جایگزینِ اتمیک روی همان id است).
   rebuildSchedule(){
-    this.port.cancelAll();
     const now = Date.now();
-    [todayStr(), addDays(todayStr(), 1)].forEach(dstr => {
-      getOccurrencesForDate(dstr).forEach(occ => {
-        if(occ.done || !occ.reminder || occ.reminder === 'none') return;
-        const fireDate = this.computeFireDate(occ);
-        if(!fireDate) return;
-        const id = occ.instanceId + '::' + occ.reminder;
-        const payload = {
-          title: 'یادآوری روزانه',
-          body: occ.title + (occ.startTime ? ' — ساعت ' + toPersianDigits(occ.startTime) : '')
-        };
-        if(fireDate.getTime() <= now){
-          // اگر لحظه‌ی یادآوری به‌تازگی گذشته (مثلاً صفحه همین الان باز شده)، فوراً نمایش بده
-          if(now - fireDate.getTime() < 2 * 60 * 1000 && !this.firedRecently.has(id)){
-            this.firedRecently.add(id);
-            this.port.present(payload);
+    const newIds = new Set();
+    // شناسه‌هایی که زمان‌شان همین الان گذشته (یعنی از این پس، ادامه‌ی
+    // ماجرا — از جمله زنجیره‌ی احتمالی Snooze — کاملاً دست خود سیستم آلارم
+    // بومی است). این‌ها را در پایان به‌هیچ‌وجه cancel نمی‌کنیم؛ چون اگر
+    // کاربر همین الان از داخل صفحه‌ی آلارم Snooze زده باشد، یک آلارم جدید
+    // با همین id مستقیماً توسط خودِ اندروید (بدون اطلاع جاوااسکریپت) ثبت
+    // شده و لغو کردنش در اینجا دقیقاً همان باگی است که نباید رخ دهد.
+    const dueIds = new Set();
+
+    for(let i = 0; i <= this.SCHEDULE_HORIZON_DAYS; i++){
+      const dstr = addDays(todayStr(), i);
+      let occs;
+      try{
+        occs = getOccurrencesForDate(dstr);
+      }catch(e){
+        // اگر محاسبه‌ی یک روز خاص خطا داد، فقط همان روز را نادیده می‌گیریم؛
+        // این نباید مانع رسیدگی به بقیه‌ی روزها یا لغو نادرست آلارم‌های سالم شود.
+        console.warn('ReminderEngine: getOccurrencesForDate failed for', dstr, e);
+        continue;
+      }
+      occs.forEach(occ => {
+        try{
+          if(occ.done || !occ.reminder || occ.reminder === 'none') return;
+          const fireDate = this.computeFireDate(occ);
+          if(!fireDate) return;
+          const id = occ.instanceId + '::' + occ.reminder;
+          // آیا این رخداد از چرخه‌ی قبلی rebuildSchedule از قبل روی
+          // AlarmManager ثبت شده بود؟ اگر بله و زمانش هم‌اکنون گذشته،
+          // یعنی خودِ آلارم واقعی به‌موقع پخش شده و نیازی به جبران با
+          // present() نیست (وگرنه یک زنگ تکراری/همزمان ساخته می‌شود).
+          const wasAlreadyScheduled = this.scheduledIds.has(id);
+          const payload = {
+            title: 'یادآوری روزانه',
+            body: occ.title + (occ.startTime ? ' — ساعت ' + toPersianDigits(occ.startTime) : ''),
+            // فیلدهای اضافه فقط برای NativeAlarmPort/صفحه‌ی تمام‌صفحه استفاده
+            // می‌شوند؛ بقیه‌ی پورت‌ها (Web/Capacitor فعلی) همچنان فقط از
+            // title/body بالا استفاده می‌کنند و رفتارشان تغییری نمی‌کند.
+            taskTitle: occ.title,
+            time: occ.startTime ? toPersianDigits(occ.startTime) : '',
+            description: occ.description || ''
+          };
+          if(fireDate.getTime() <= now){
+            dueIds.add(id);
+            // اگر لحظه‌ی یادآوری به‌تازگی گذشته (مثلاً صفحه همین الان باز شده)، فوراً نمایش بده —
+            // فقط وقتی این رخداد قبلاً روی سیستم ثبت نشده بود (وگرنه یعنی
+            // آلارم واقعی خودش به‌موقع پخش شده و این فقط یک تکرار اضافه است).
+            if(!wasAlreadyScheduled && now - fireDate.getTime() < 2 * 60 * 1000 && !this.firedRecently.has(id)){
+              this.firedRecently.add(id);
+              this.port.present(payload);
+            }
+            return;
           }
-          return;
+          this.firedRecently.delete(id);
+          newIds.add(id);
+          this.port.scheduleAt(id, payload, fireDate);
+        }catch(e){
+          console.warn('ReminderEngine: failed to schedule one occurrence', e);
         }
-        this.firedRecently.delete(id);
-        this.port.scheduleAt(id, payload, fireDate);
       });
+    }
+
+    // فقط آلارم‌هایی که قبلاً ثبت شده بودند، دیگر در لیست جدید نیستند، و
+    // زمان‌شان هم هنوز نگذشته (یعنی واقعاً به‌خاطر انجام‌شدن/حذف/خاموش‌شدنِ
+    // یادآوری کنار گذاشته شده‌اند، نه صرفاً چون موعدشان رسیده) را لغو کن.
+    // برای شناسه‌های dueIds عمداً کاری نمی‌کنیم؛ چرخه‌ی بعدی‌شان (ازجمله
+    // یک Snooze احتمالی که مستقیماً و بدون اطلاع اینجا روی اندروید ثبت شده)
+    // کاملاً به خودِ سیستم آلارم بومی سپرده می‌شود.
+    this.scheduledIds.forEach(id => {
+      if(!newIds.has(id) && !dueIds.has(id)) this.port.cancel(id);
     });
+    this.scheduledIds = newIds;
   }
 };
 ReminderEngine.init();

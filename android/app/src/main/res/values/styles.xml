@@ -19,4 +19,14 @@
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
     </style>
+
+    <!-- تم صفحه‌ی تمام‌صفحه‌ی آلارم: بدون Action Bar، پس‌زمینه‌ی Ivory هماهنگ
+         با ظاهر روزینو، و قابل نمایش روی صفحه‌ی قفل. -->
+    <style name="AlarmActivityTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/alarm_bg</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 </resources>
